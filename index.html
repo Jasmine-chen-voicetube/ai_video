@@ -672,6 +672,32 @@ jingles, musical transitions, or musical ending.
 Do not fill silent moments with music.
 End naturally immediately after the final spoken word.</div>
       </div>
+
+      <div class="section-card">
+        <h3>禁止畫面出現任何文字</h3>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px;">AI 容易在畫作、展示架、建築、服裝上自動生成標籤或文字。需要文字時用後製文字圖層加入。</p>
+        <div class="prompt-code"><span class="hi">NO VISIBLE TEXT — STRICT RULE</span>
+
+The entire video must contain absolutely NO visible text of any kind.
+
+- No subtitles or captions.
+- No titles or on-screen words.
+- No letters, numbers, or symbols.
+- No labels on paintings or exhibition stands.
+- No readable shop signs, posters, or banners.
+- No logos or watermarks.
+- No text appearing in the background.
+- No text appearing at the beginning or end.
+
+All paintings, buildings, clothing, and background objects
+must be completely free of writing.
+
+Do not generate any typography or written language
+anywhere in the video.
+
+The video must consist entirely of animated visuals
+and character dialogue, with absolutely no visible text.</div>
+      </div>
     </div>
   </div>
 
@@ -1502,6 +1528,7 @@ End immediately after the final spoken word.</span></div>
           <tr><td>台詞被分配給錯誤角色</td><td>Prompt 沒明確指定每句話是誰說的</td><td>用 <code>SPEAKING TURN 1 — OLIVER ONLY</code> 結構；明確寫「另一人 mouth closed, remains silent」</td></tr>
           <tr><td>越南地名發音跑掉</td><td>AI 用英文拼字規則推測越南語發音</td><td>台詞改用語音近似拼法 <code>Baht Chahng</code>（畫面文字仍用正式拼法 Bat Trang）</td></tr>
           <tr><td>生成請求被擋下「似乎違反相關條款」</td><td>Prompt 裡多個涉及未成年外貌/年齡/身體描述的組合觸發自動審查</td><td>大幅精簡 Prompt；拿掉年齡數字、生理特徵清單、聲音特徵列表；改說「用參考圖的角色風格」</td></tr>
+          <tr><td>畫作、建築、服裝上出現 AI 自動生成的文字標籤</td><td>AI 預設會在場景物件上加標籤</td><td>加入 <code>NO VISIBLE TEXT — STRICT RULE</code> 區塊，逐條列出禁止的文字類型（見 Prompt 範本頁）</td></tr>
         </table>
       </div>
 
