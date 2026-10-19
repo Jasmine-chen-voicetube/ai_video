@@ -411,6 +411,18 @@
             <p>把 AI 影片拖拉進時間軸時，Google Vids 沒辦法把它放到最後一個位置，只能放倒數第二個。</p>
             <p style="margin-top:6px;"><b>解法：</b>在時間軸尾端事先新增一個空白場景（「這個場景沒有任何物件」）當佔位符，拖入 AI 片段後就會落在倒數第二格，而最後那個空白場景刪掉就好。</p></div>
           </div>
+
+          <div class="callout tip" style="margin-top:10px;">
+            <div class="callout-icon">💡</div>
+            <div><b>操作小撇步：影片替換</b>
+            <p>要把時間軸上的舊片段換成新版本：</p>
+            <ol style="margin-top:6px;padding-left:16px;font-size:13px;line-height:1.9;">
+              <li>在時間軸上選中要替換的片段</li>
+              <li>在右側 AI 短片面板點「插入」旁的箭頭，選<b>「在目前場景中插入」</b>（不是「在新場景中插入」）</li>
+              <li>時間軸同一格下方會出現兩層影片——上面舊的、下面新的</li>
+              <li>刪掉舊的那層就完成替換</li>
+            </ol></div>
+          </div>
         </div>
         <div class="tab-pane" id="tab-setup-prompt">
           <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">這段 Prompt 貼在每次生成的最前面，確保所有片段風格一致。依你的影片風格調整括號內的內容。</p>
@@ -435,12 +447,16 @@ same <span class="hi">[列出要固定的元素]</span>,
             <img src="hanoi-guide-assets/vids-interface.png" class="active" data-label="AI 短片面板：上傳參考圖、輸入 Prompt、插入時間軸">
             <img src="hanoi-guide-assets/vids-settings.png" data-label="設定面板：模型（Omni）、解析度（720p）、影片長度">
             <img src="hanoi-guide-assets/tip-blank-scene.png" data-label="💡 小撇步：時間軸最後塞一個空白場景，解決 AI 片段無法拖到最末位的問題">
+            <img src="hanoi-guide-assets/tip-replace-insert.png" data-label="💡 小撇步：影片替換——選中片段後，插入時選「在目前場景中插入」">
+            <img src="hanoi-guide-assets/tip-replace-two-tracks.png" data-label="同一格出現兩層影片，刪掉舊的那層即完成替換">
             <div class="img-label">AI 短片面板：上傳參考圖、輸入 Prompt、插入時間軸</div>
           </div>
           <div class="gallery-thumbs">
             <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/vids-interface.png"></div>
             <div class="gallery-thumb" data-idx="1"><img src="hanoi-guide-assets/vids-settings.png"></div>
             <div class="gallery-thumb" data-idx="2"><img src="hanoi-guide-assets/tip-blank-scene.png"></div>
+            <div class="gallery-thumb" data-idx="3"><img src="hanoi-guide-assets/tip-replace-insert.png"></div>
+            <div class="gallery-thumb" data-idx="4"><img src="hanoi-guide-assets/tip-replace-two-tracks.png"></div>
           </div>
         </div>
       </div>
