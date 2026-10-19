@@ -261,6 +261,7 @@
     <div class="nav-item" data-page="references">🖼️ 準備參考素材</div>
     <div class="nav-item" data-page="setup">⚙️ Google Vids 設定</div>
     <div class="nav-item" data-page="prompt">✏️ 怎麼寫 Prompt</div>
+    <div class="nav-item" data-page="prompt-template">📐 Prompt 範本</div>
   </div>
   <div class="nav-divider"></div>
   <div class="nav-group">
@@ -278,6 +279,7 @@
   <div class="nav-divider"></div>
   <div class="nav-group">
     <div class="nav-group-title">參考</div>
+    <div class="nav-item" data-page="checklist">✅ 生成後清單</div>
     <div class="nav-item" data-page="cheatsheet">📋 速查原則</div>
     <div class="nav-item" data-page="resources">🔗 參考資料</div>
   </div>
@@ -378,6 +380,21 @@
             <li>保留原本故事結構，只在製作階段拆開，最後在時間軸組合</li>
           </ul>
 
+          <h3 style="margin-top:16px;">建議秒數對照表</h3>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">估算台詞自然朗讀時間後加必要動作時間。<b>秒數只告訴使用者，不寫進 Prompt。</b></p>
+          <table>
+            <tr><th>對白類型</th><th>建議秒數</th></tr>
+            <tr><td>一句短對白（5–7 字）</td><td>4–5 秒</td></tr>
+            <tr><td>一句中等長度對白</td><td>5–7 秒</td></tr>
+            <tr><td>一句較長的比較級句子</td><td>7–9 秒</td></tr>
+            <tr><td>兩句短對白</td><td>6–9 秒</td></tr>
+            <tr><td>長句或需要發音示範</td><td>拆成多段</td></tr>
+          </table>
+          <div class="callout tip" style="margin-top:10px;">
+            <div class="callout-icon">💡</div>
+            <div><b>結尾空白 = 音樂風險</b><p>片段設太長 → 台詞說完後 AI 塞音樂。不能因為怕音樂就讓語速加快，縮短秒數或直接在時間軸裁掉尾端比較實際。</p></div>
+          </div>
+
           <div class="callout tip" style="margin-top:16px;">
             <div class="callout-icon">💡</div>
             <div><b>操作小撇步：在時間軸最後塞一個空白場景</b>
@@ -424,36 +441,139 @@ same <span class="hi">[列出要固定的元素]</span>,
   <div class="page" id="page-prompt">
     <div class="page-full">
       <div class="page-title">怎麼寫 Prompt</div>
-      <div class="page-desc">每次生成分兩部分：固定的「風格基礎 Prompt」＋當段的「動作 Prompt」。</div>
+      <div class="page-desc">每次生成分兩部分：固定的「風格基礎 Prompt」＋當段的「動作 Prompt」。完整可複製範本見 <span style="color:var(--blue);cursor:pointer;" onclick="showPage('prompt-template')">Prompt 範本頁 →</span></div>
 
       <div class="section-card">
-        <h3>當段專屬 Prompt 結構</h3>
-        <div class="prompt-code"><span class="dim">// 鏡頭（優先寫穩定鏡頭，避免推近/平移）</span>
-Use a stable medium-wide shot.
-<span class="dim">// 或：medium close-up of [角色名] from the waist up</span>
-No zoom. No panning. One continuous stable shot.
+        <h3>8 段式 Prompt 結構</h3>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;">不用每次都從零寫。依序填入這 8 段，沒有的留空或省略。</p>
+        <table>
+          <tr><th style="width:28px;">段</th><th>標題</th><th>說明</th></tr>
+          <tr><td><b>A</b></td><td>Visual Style</td><td>風格化 3D 動畫、材質、光線——每段都要寫，不能假設 AI 記得</td></tr>
+          <tr><td><b>B</b></td><td>Character & Camera</td><td>出場人物、畫面位置（左/右）、鏡頭類型、是否固定</td></tr>
+          <tr><td><b>C</b></td><td>Environment</td><td>場景背景線索 + 必要道具；不要過度描述以免 AI 重建</td></tr>
+          <tr><td><b>D</b></td><td>Action</td><td>一段只放少量動作，避免多次鏡頭切換</td></tr>
+          <tr><td><b>E</b></td><td>Exact Dialogue</td><td>明確指定誰說哪句，完整使用原始腳本，禁止增減</td></tr>
+          <tr><td><b>F</b></td><td>Voice</td><td>角色聲線特徵、口音、語速；不要只寫年齡</td></tr>
+          <tr><td><b>G</b></td><td>Audio</td><td>Dialogue only；明確禁止背景音樂</td></tr>
+          <tr><td><b>H</b></td><td>Ending</td><td>台詞盡早開始、結束後立刻收尾、不安排長時間靜默反應</td></tr>
+        </table>
+      </div>
 
-<span class="dim">// 動作（簡潔，一個動作就好）</span>
-<span class="hi">[角色名]</span> <span class="hi">[做什麼動作]</span>.
-
-<span class="dim">// 對白</span>
-<span class="hi">[角色名]</span> says in <span class="hi">[British / American]</span> English:
-"<span class="hi">[台詞]</span>"
-
-<span class="dim">// 音效</span>
-Soft background ambience. Dialogue must be clear.
-
-<span class="dim">// 限制（有需要才加）</span>
-Do not add subtitles or on-screen text.
-Do not add new characters or objects.</div>
+      <div class="section-card">
+        <h3>每段生成前的三個確認問題</h3>
+        <ol class="list" style="list-style:decimal;padding-left:18px;">
+          <li>原始對白是否完整？說話者是否正確？</li>
+          <li>這段有沒有指定必須展示的教學物件或畫面動作？</li>
+          <li>有沒有需要後製加入的詞彙、音標或文法文字？</li>
+        </ol>
+        <div class="callout tip" style="margin-top:10px;">
+          <div class="callout-icon">💡</div>
+          <div><b>教學文字不要交給 AI</b><p>音標、文法提示、詞彙高亮，在 Google Vids 後製用文字圖層加入。AI 處理長文字（尤其地名）容易拼錯或變形。</p></div>
+        </div>
       </div>
 
       <div class="section-card">
         <h3>聲音一致性</h3>
         <div class="callout info" style="margin-bottom:0;">
           <div class="callout-icon">ℹ️</div>
-          <div><b>目前限制：Google Vids 的聲音每段是重新生成的</b><p>在 Prompt 裡描述角色聲音特徵可以降低差距，但無法完全鎖定。如需高度一致的聲音，考慮後製統一配音。</p></div>
+          <div><b>目前限制：Google Vids 的聲音每段是重新生成的</b><p>在 Prompt 裡描述角色聲音特徵可以降低差距，但無法完全鎖定。文字寫「與前面相同」沒有效果——AI 沒有存取上一段音訊。如需高度一致的聲音，考慮後製統一配音。</p></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Prompt 範本 ── -->
+  <div class="page" id="page-prompt-template">
+    <div class="page-full">
+      <div class="page-title">Prompt 範本</div>
+      <div class="page-desc">可直接複製使用。替換 <code>[方括號]</code> 內的內容，保留其餘結構不動。</div>
+
+      <div class="section-card">
+        <h3>通用 8 段式 Prompt（完整版）</h3>
+        <div class="prompt-code">Create a fully computer-animated, stylised 3D educational film scene
+using the provided reference images.
+
+<span class="hi">VISUAL STYLE</span>
+Maintain the same original stylised 3D animation appearance,
+expressive animated facial design, softly shaded materials,
+and warm golden-afternoon lighting.
+This must look like a rendered animated film, not live-action footage.
+
+<span class="hi">CHARACTER AND CAMERA</span>
+Show [CHARACTER NAME] from the reference images.
+Preserve the original character design, hairstyle, clothing,
+and accessories.
+Use [CAMERA SHOT TYPE — e.g. stable medium close-up from the chest up].
+Position the character [LEFT / RIGHT HALF of the frame]
+and have them look towards [DIRECTION OR TARGET].
+Use one continuous, stable camera shot.
+
+<span class="hi">ENVIRONMENT</span>
+Maintain the same established location and visual atmosphere.
+Keep the background softly blurred where appropriate,
+preserving the important scene elements.
+
+<span class="hi">ACTION</span>
+[ONE OR TWO SIMPLE CHARACTER ACTIONS.]
+
+<span class="hi">EXACT DIALOGUE — STRICT VERBATIM ONLY</span>
+[CHARACTER NAME] says exactly:
+"[INSERT ORIGINAL SCRIPT LINE]"
+This is the complete and only dialogue.
+Do not add, remove, repeat, paraphrase, or rewrite any words.
+
+<span class="hi">VOICE</span>
+Use the character's established [youthful / natural] voice
+and [British / Vietnamese / appropriate] English accent.
+Keep the dialogue clear and suitable for the target learners.
+
+<span class="hi">AUDIO</span>
+Dialogue only.
+Absolutely no background music, instrumental music, melodies,
+jingles, musical transitions, or musical ending.
+Do not fill silent moments with music.
+
+<span class="hi">ENDING</span>
+Begin speaking promptly.
+End the scene naturally immediately after the final spoken word.
+No prolonged silent reaction, subtitles, or unnecessary cuts.</div>
+      </div>
+
+      <div class="section-card">
+        <h3>說話者明確分配（兩人輪流時必用）</h3>
+        <div class="prompt-code"><span class="hi">EXACT DIALOGUE — STRICT VERBATIM ONLY</span>
+
+SPEAKING TURN 1 — OLIVER ONLY
+Oliver says exactly:
+"[Oliver's line]"
+Linh keeps her mouth closed and remains completely silent.
+
+SPEAKING TURN 2 — LINH ONLY
+Linh says exactly:
+"[Linh's line]"
+Oliver keeps his mouth closed and remains completely silent.
+
+Do not swap voices. Do not split a single line between characters.</div>
+      </div>
+
+      <div class="section-card">
+        <h3>台詞逐字忠實（單人版）</h3>
+        <div class="prompt-code"><span class="hi">EXACT DIALOGUE — STRICT VERBATIM ONLY</span>
+[CHARACTER NAME] says exactly:
+"[Original line from script]"
+This is the complete and only spoken dialogue.
+Do not add, remove, repeat, paraphrase, explain,
+or rewrite any words.</div>
+      </div>
+
+      <div class="section-card">
+        <h3>全段禁止背景音樂（固定結尾）</h3>
+        <div class="prompt-code"><span class="hi">AUDIO — DIALOGUE ONLY</span>
+The soundtrack contains only the specified character dialogue.
+Absolutely no background music, instrumental music, melodies,
+jingles, musical transitions, or musical ending.
+Do not fill silent moments with music.
+End naturally immediately after the final spoken word.</div>
       </div>
     </div>
   </div>
@@ -1180,6 +1300,85 @@ End immediately after the final spoken word.</span></div>
             <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/problem-content-policy.png"></div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 生成後清單 ── -->
+  <div class="page" id="page-checklist">
+    <div class="page-full">
+      <div class="page-title">生成後清單</div>
+      <div class="page-desc">每段生成完成後，按照這個順序逐項確認。打勾才算過關。</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="section-card">
+          <h3>🎬 畫面</h3>
+          <ul class="list">
+            <li>正確的風格化 3D 卡通動畫（非真人寫實）</li>
+            <li>角色臉部、髮型、制服與設定圖一致</li>
+            <li>人物方向與動作合理</li>
+            <li>背景光線維持暖金色調</li>
+            <li>沒有明顯背景跳動</li>
+            <li>保留原腳本的必要教學畫面</li>
+          </ul>
+        </div>
+        <div class="section-card">
+          <h3>🗣️ 台詞與聲音</h3>
+          <ul class="list">
+            <li>角色聲線符合年齡（無成熟/變聲感）</li>
+            <li>台詞逐字正確，沒有擅自增加內容</li>
+            <li>說話者正確，沒有串台詞</li>
+            <li>重要地名發音正確</li>
+          </ul>
+        </div>
+        <div class="section-card">
+          <h3>🎵 音訊</h3>
+          <ul class="list">
+            <li>沒有背景音樂</li>
+            <li>台詞清楚可辨識</li>
+            <li>台詞結束後沒有過長的空白</li>
+          </ul>
+        </div>
+        <div class="section-card">
+          <h3>📝 後製待辦</h3>
+          <ul class="list">
+            <li>需要加入的詞彙／音標文字已標記</li>
+            <li>需要加入的文法提示文字已標記</li>
+            <li>地名畫面標籤已安排</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-card" style="margin-top:16px;">
+        <h3>⚠️ 失敗時怎麼處理</h3>
+        <table>
+          <tr><th>問題</th><th>建議處理</th></tr>
+          <tr><td>台詞或地名錯誤</td><td>重新生成（高優先）</td></tr>
+          <tr><td>角色聲音嚴重跑掉</td><td>重新生成；或後製統一配音</td></tr>
+          <tr><td>寫實風格</td><td>加強視覺參考；改用單人近景圖</td></tr>
+          <tr><td>背景不連續</td><td>改用單人近景 + 模糊背景策略</td></tr>
+          <tr><td>服裝錯誤</td><td>明確指定每個服裝細節再重生</td></tr>
+          <tr><td>結尾有一小段音樂</td><td>直接在時間軸裁掉，不必重生</td></tr>
+          <tr><td>小幅動作不完美</td><td>只要不影響理解，可以接受</td></tr>
+          <tr><td>教學文字缺少</td><td>後製用 Google Vids 文字圖層補上</td></tr>
+        </table>
+        <div class="callout lesson" style="margin-top:12px;">
+          <div class="callout-icon">✅</div>
+          <div><b>最重要：不要過度重生</b><p>只針對失敗的項目做最小幅度修正。原本已成功的設定不要一起改掉。能裁剪解決的問題（如結尾音樂）就直接裁，不需要整段重生。</p></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>📌 七條核心原則</h3>
+        <ol class="list" style="list-style:decimal;padding-left:18px;display:flex;flex-direction:column;gap:8px;">
+          <li><b>Prompt 不是越長越好。</b>讓模型清楚知道：誰出現、做什麼、說什麼、畫面風格是什麼。</li>
+          <li><b>用鏡頭掩蓋生成不一致，比強求各段完全一樣更實際。</b>單人特寫 + 正反拍 + 模糊背景是最有效的策略。</li>
+          <li><b>台詞是硬性需求。</b>所有英文句子以原始腳本為準，不因流暢度改字。</li>
+          <li><b>音訊與畫面要分別檢查。</b>畫面對了，聲線、地名發音、結尾音樂可能還是錯的。</li>
+          <li><b>原始腳本包含畫面、台詞、教學文字三層。</b>不能只保留台詞就認為完整。</li>
+          <li><b>避免過度重生。</b>能裁剪的小問題直接裁；主要台詞錯誤或畫風不對才值得重生。</li>
+          <li><b>成功的風格圖和聲音要保留作為後續參考。</b>但文字 Prompt 只能引導一致性，無法真正鎖定角色聲紋。</li>
+        </ol>
       </div>
     </div>
   </div>
