@@ -445,9 +445,9 @@ same <span class="hi">[列出要固定的元素]</span>,
     <div class="page-split">
       <div class="split-left">
         <div class="tab-bar">
-          <div class="tab-btn active" data-tab="tips-blank">空白場景佔位</div>
-          <div class="tab-btn" data-tab="tips-replace">影片替換</div>
-          <div class="tab-btn" data-tab="tips-omni">移除文字</div>
+          <div class="tab-btn active" data-tab="tips-blank" data-gallery-start="0">空白場景佔位</div>
+          <div class="tab-btn" data-tab="tips-replace" data-gallery-start="1">影片替換</div>
+          <div class="tab-btn" data-tab="tips-omni" data-gallery-start="3">移除文字</div>
         </div>
 
         <div class="tab-pane active" id="tab-tips-blank">
@@ -1560,6 +1560,17 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.add('active');
     const pane = document.getElementById('tab-' + tabId);
     if (pane) pane.classList.add('active');
+
+    // Sync gallery if tab declares a start index
+    if (btn.dataset.galleryStart !== undefined) {
+      const page = btn.closest('.page');
+      const gallery = page && page.querySelector('.gallery');
+      if (gallery) {
+        const idx = parseInt(btn.dataset.galleryStart);
+        const thumb = gallery.querySelector(`.gallery-thumb[data-idx="${idx}"]`);
+        if (thumb) thumb.click();
+      }
+    }
   });
 });
 
