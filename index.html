@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Vids 製作指南</title>
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --card: #ffffff;
+    --border: #e0ddd6;
+    --text: #1a1a1a;
+    --muted: #6b6860;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --orange: #d97706;
+    --orange-bg: #fffbeb;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --sidebar-w: 210px;
+    --header-h: 52px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; height: 100vh; overflow: hidden; }
+
+  /* ── App shell ── */
+  .app-header {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+    background: #1e3a5f; color: white;
+    display: flex; align-items: center; padding: 0 20px;
+    z-index: 200; gap: 12px;
+  }
+  .app-header h1 { font-size: 15px; font-weight: 700; }
+  .app-header p  { font-size: 12px; opacity: 0.6; }
+
+  .app-body {
+    position: fixed; top: var(--header-h); left: 0; right: 0; bottom: 0;
+    display: flex;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: var(--sidebar-w); flex-shrink: 0;
+    background: #1a2d4a;
+    overflow-y: auto; overflow-x: hidden;
+    padding: 16px 0 24px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+  .nav-group { margin-bottom: 6px; }
+  .nav-group-title {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: rgba(255,255,255,0.35);
+    padding: 8px 16px 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px; cursor: pointer;
+    color: rgba(255,255,255,0.65); font-size: 13px;
+    border-left: 2px solid transparent;
+    transition: all 0.15s; text-decoration: none;
+    line-height: 1.3;
+  }
+  .nav-item:hover { color: white; background: rgba(255,255,255,0.06); }
+  .nav-item.active { color: white; border-left-color: #60a5fa; background: rgba(255,255,255,0.1); }
+  .nav-item .nav-badge {
+    margin-left: auto; background: rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 1px 7px; font-size: 10px;
+    font-weight: 700; color: rgba(255,255,255,0.8);
+  }
+  .nav-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 6px 14px; }
+
+  /* ── Main area ── */
+  .main {
+    flex: 1; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── Page system ── */
+  .page { display: none; flex: 1; overflow: hidden; }
+  .page.active { display: flex; flex-direction: column; }
+
+  /* Full-width pages */
+  .page-full { flex: 1; overflow-y: auto; padding: 28px 36px; }
+  .page-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .page-desc  { color: var(--muted); font-size: 13.5px; margin-bottom: 24px; }
+
+  /* ── Split layout (50/50) ── */
+  .page-split {
+    flex: 1; display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+  }
+  .split-left {
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow: hidden; background: white;
+  }
+  .split-right {
+    display: flex; flex-direction: column;
+    overflow: hidden; background: var(--bg);
+  }
+
+  /* ── Tabs ── */
+  .tab-bar {
+    display: flex; border-bottom: 1px solid var(--border);
+    background: #faf9f6; flex-shrink: 0;
+    padding: 0 16px;
+  }
+  .tab-btn {
+    padding: 11px 14px; font-size: 13px; font-weight: 600;
+    color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+    margin-bottom: -1px; transition: all 0.15s; user-select: none;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  .tab-pane { display: none; flex: 1; overflow-y: auto; padding: 20px; }
+  .tab-pane.active { display: block; }
+
+  /* ── Image gallery ── */
+  .gallery {
+    flex: 1; display: flex; flex-direction: column;
+    padding: 16px; gap: 12px; overflow: hidden;
+  }
+  .gallery-main {
+    flex: 1; min-height: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: #eceae4; border-radius: 10px; overflow: hidden;
+    position: relative;
+  }
+  .gallery-main img,
+  .gallery-main video {
+    max-width: 100%; max-height: 100%;
+    object-fit: contain; border-radius: 8px;
+    display: none;
+  }
+  .gallery-main img.active { display: block; }
+  .gallery-main video.active { display: block; width: 100%; }
+  .gallery-main .img-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.55));
+    color: white; font-size: 12px; padding: 20px 12px 10px;
+    border-radius: 0 0 8px 8px;
+  }
+  .gallery-thumbs {
+    display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap;
+  }
+  .gallery-thumb {
+    width: 64px; height: 48px; border-radius: 6px; overflow: hidden;
+    border: 2px solid transparent; cursor: pointer; transition: all 0.15s;
+    background: #ddd; flex-shrink: 0;
+  }
+  .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .gallery-thumb.active { border-color: var(--blue); }
+  .gallery-thumb:hover:not(.active) { border-color: #93c5fd; }
+  .video-thumb {
+    width: 100%; height: 100%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 2px;
+    background: #1e293b; color: white;
+  }
+  .video-thumb .vt-icon { font-size: 18px; line-height: 1; }
+  .video-thumb .vt-label { font-size: 9px; text-align: center; padding: 0 3px; line-height: 1.2; opacity: 0.85; }
+
+  /* ── Content components ── */
+  .callout { display: flex; gap: 10px; padding: 10px 14px; border-radius: 8px; font-size: 13.5px; margin-bottom: 10px; }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout.problem { background: var(--red-bg); border: 1px solid #fca5a5; }
+  .callout.lesson  { background: var(--green-bg); border: 1px solid #86efac; }
+  .callout.tip     { background: var(--orange-bg); border: 1px solid #fcd34d; }
+  .callout.info    { background: var(--blue-bg); border: 1px solid #bfdbfe; }
+  .callout b { display: block; margin-bottom: 2px; }
+  .callout p { color: var(--muted); font-size: 13px; }
+
+  .prompt-code {
+    background: #0f1117; color: #e2e8f0;
+    border-radius: 8px; padding: 14px 16px;
+    font-family: "SF Mono","Fira Code","Consolas",monospace;
+    font-size: 12px; line-height: 1.7; white-space: pre-wrap;
+    margin-bottom: 12px;
+  }
+  .prompt-code .add { color: #4ade80; }
+  .prompt-code .del { color: #f87171; text-decoration: line-through; opacity: 0.7; }
+  .prompt-code .hi  { color: #fbbf24; }
+  .prompt-code .dim { color: #6b7280; }
+
+  .prompt-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 6px; margin-top: 14px;
+  }
+  .prompt-label.bad  { color: var(--red); }
+  .prompt-label.good { color: var(--green); }
+  .prompt-label:first-child { margin-top: 0; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 14px; }
+  th { background: #f8f7f4; font-weight: 600; text-align: left; padding: 8px 12px; border-bottom: 2px solid var(--border); }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+
+  .tag { display: inline-block; border-radius: 4px; padding: 1px 8px; font-size: 12px; font-weight: 600; margin: 2px 2px 2px 0; }
+  .tag-blue   { background: var(--blue-bg);   color: var(--blue); }
+  .tag-green  { background: var(--green-bg);  color: var(--green); }
+  .tag-red    { background: var(--red-bg);    color: var(--red); }
+  .tag-orange { background: var(--orange-bg); color: var(--orange); }
+  .tag-grey   { background: #f1f0eb; color: var(--muted); }
+
+  h3 { font-size: 14px; font-weight: 700; margin: 0 0 8px; }
+  h4 { font-size: 13px; font-weight: 700; margin: 14px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; font-size: 11px; }
+
+  .principle { border-left: 3px solid var(--blue); padding: 10px 14px; background: white; border: 1px solid var(--border); border-left-width: 3px; border-left-color: var(--blue); border-radius: 0 8px 8px 0; margin-bottom: 10px; }
+  .principle.orange { border-left-color: var(--orange); }
+  .principle.red    { border-left-color: var(--red); }
+  .principle.green  { border-left-color: var(--green); }
+  .principle b { font-size: 13.5px; }
+  .principle p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .steps { counter-reset: step; }
+  .step { display: flex; gap: 14px; margin-bottom: 16px; }
+  .step-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: #1e3a5f; color: white; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .step-title { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+  .step-desc  { color: var(--muted); font-size: 13.5px; }
+
+  code { background: #f1f0eb; padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 12px; }
+
+  .section-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 16px; }
+  .section-card h3 { margin-bottom: 12px; }
+
+  .ext-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--blue-bg); color: var(--blue);
+    border: 1px solid #bfdbfe; border-radius: 8px;
+    padding: 10px 16px; text-decoration: none;
+    font-size: 13.5px; font-weight: 600; margin-top: 8px;
+  }
+
+  ul.list { padding-left: 18px; }
+  ul.list li { margin-bottom: 5px; font-size: 13.5px; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div>
+    <h1>Google Vids AI 影片製作指南</h1>
+    <p>Hanoi Through Our Eyes · 持續更新中</p>
+  </div>
+</div>
+
+<div class="app-body">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="nav-group">
+    <div class="nav-group-title">基礎</div>
+    <div class="nav-item active" data-page="overview">📋 製作流程總覽</div>
+    <div class="nav-item" data-page="references">🖼️ 準備參考素材</div>
+    <div class="nav-item" data-page="setup">⚙️ Google Vids 設定</div>
+    <div class="nav-item" data-page="prompt">✏️ 怎麼寫 Prompt</div>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <div class="nav-group-title">案例記錄</div>
+    <div class="nav-item" data-page="case1">🎬 案例 1：風格跑掉</div>
+    <div class="nav-item" data-page="case2">🎬 案例 2：背景走樣</div>
+    <div class="nav-item" data-page="case3">🎬 案例 3：色調 &amp; 站位</div>
+    <div class="nav-item" data-page="case4">🔊 案例 4：聲音變成熟</div>
+    <div class="nav-item" data-page="case5">🎵 案例 5：台詞後加音樂</div>
+    <div class="nav-item" data-page="case6">🗣️ 案例 6：說話者錯誤</div>
+    <div class="nav-item" data-page="case7">🌏 案例 7：地名發音跑掉</div>
+    <div class="nav-item" data-page="case8">🎥 案例 8：片段間場景不連貫</div>
+    <div class="nav-item" data-page="case9">🚫 案例 9：Prompt 觸發內容審查</div>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <div class="nav-group-title">參考</div>
+    <div class="nav-item" data-page="cheatsheet">📋 速查原則</div>
+    <div class="nav-item" data-page="resources">🔗 參考資料</div>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- ── 製作流程 ── -->
+  <div class="page active" id="page-overview">
+    <div class="page-full">
+      <div class="page-title">製作流程總覽</div>
+      <div class="page-desc">在開始生成影片之前，先走完這個流程，能減少很多反覆修改的時間。</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div><div class="step-title">確定視覺風格</div><div class="step-desc">決定要做 3D 動畫、2D 插畫或其他風格。先用圖像 AI（如 ChatGPT、Midjourney）產出一張風格主視覺，確認方向後再開始生成影片。</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="step-title">製作設定圖（Reference Images）</div><div class="step-desc">準備角色設定圖、背景設定圖，以及最重要的「主視覺圖」——所有角色 + 場景都在的完整畫面。這是確保各段影片風格一致的關鍵。</div></div></div>
+        <div class="step"><div class="step-num">3</div><div><div class="step-title">把腳本拆成 10 秒片段</div><div class="step-desc">Google Vids 每次最多生成 10 秒。把腳本拆開，每個片段只做一件事（一組對白、一個動作）。保留原本的故事結構，最後在時間軸上組合。</div></div></div>
+        <div class="step"><div class="step-num">4</div><div><div class="step-title">用 Prompt 模板逐段生成</div><div class="step-desc">每段都用相同的「固定風格 Prompt」開頭，再加當段專屬的動作和對白。固定部分不要每次修改，這樣各段才能保持一致。</div></div></div>
+        <div class="step"><div class="step-num">5</div><div><div class="step-title">遇到問題時：找根本原因，調整 Prompt</div><div class="step-desc">背景跑掉、風格不對、角色變樣——每個問題都有對應的修法。<span style="color:var(--blue);cursor:pointer;" onclick="showPage('case1')">見案例記錄 →</span></div></div></div>
+        <div class="step"><div class="step-num">6</div><div><div class="step-title">後製：加教學文字 / 字幕</div><div class="step-desc">音標、字幕、詞彙高亮在後製用文字圖層加入，不要交給 AI 生成。AI 處理長文字（尤其地名）容易出錯。</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 參考素材 ── -->
+  <div class="page" id="page-references">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="ref-desc">說明</div>
+        </div>
+        <div class="tab-pane active" id="tab-ref-desc">
+          <h3>需要準備哪些設定圖？</h3>
+          <table>
+            <tr><th>設定圖</th><th>重要性</th><th>內容</th></tr>
+            <tr><td><b>主視覺圖</b> ⭐</td><td><span class="tag tag-red">最重要</span></td><td>角色 + 場景同時出現，構圖和光線都確定好</td></tr>
+            <tr><td><b>角色設定圖</b></td><td><span class="tag tag-orange">必備</span></td><td>主要角色的多角度、表情細節</td></tr>
+            <tr><td><b>場景設定圖</b></td><td><span class="tag tag-grey">視需要</span></td><td>背景環境的全景</td></tr>
+          </table>
+
+          <div class="callout lesson">
+            <div class="callout-icon">✅</div>
+            <div><b>主視覺比分開上傳更有效</b><p>「角色 + 場景」的單張主視覺，比角色圖 + 場景圖分開上傳更能讓 AI 維持構圖一致性。它同時鎖定了角色位置、背景、整體氣氛。</p></div>
+          </div>
+
+          <h4 style="margin-top:16px;">每段要上傳幾張？</h4>
+          <div class="callout info">
+            <div class="callout-icon">🎭</div>
+            <div><b>角色台詞鏡頭</b><p>主視覺圖 + 角色設定圖。<br>不放純背景圖——放了反而讓 AI 嘗試重建場景。</p></div>
+          </div>
+          <div class="callout info">
+            <div class="callout-icon">🏞️</div>
+            <div><b>場景全景鏡頭</b><p>主視覺圖 + 角色設定圖 + 場景設定圖。</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="ref">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/ref-key-visual.png" class="active" data-label="① 主視覺圖：Linh 和 Oliver 站在露天畫廊前">
+            <img src="hanoi-guide-assets/ref-character-sheet.png" data-label="② 角色設定圖：Linh & Oliver 的全身、表情、細節">
+            <img src="hanoi-guide-assets/ref-scene.png" data-label="③ 場景設定圖：無角色的露天畫廊背景">
+            <div class="img-label">① 主視覺圖：Linh 和 Oliver 站在露天畫廊前</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/ref-key-visual.png"></div>
+            <div class="gallery-thumb" data-idx="1"><img src="hanoi-guide-assets/ref-character-sheet.png"></div>
+            <div class="gallery-thumb" data-idx="2"><img src="hanoi-guide-assets/ref-scene.png"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Google Vids 設定 ── -->
+  <div class="page" id="page-setup">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="setup-desc">說明</div>
+          <div class="tab-btn" data-tab="setup-prompt">固定 Prompt</div>
+        </div>
+        <div class="tab-pane active" id="tab-setup-desc">
+          <h3>建議設定</h3>
+          <table>
+            <tr><td style="color:var(--muted)">模型</td><td><span class="tag tag-blue">Omni</span></td></tr>
+            <tr><td style="color:var(--muted)">影片長度</td><td>8–10 秒</td></tr>
+            <tr><td style="color:var(--muted)">解析度</td><td>720p</td></tr>
+            <tr><td style="color:var(--muted)">顯示比例</td><td>橫式 16:9</td></tr>
+          </table>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px;">同一支影片的所有片段都用同一組設定，不要每段改模型。</p>
+
+          <h3>腳本拆片段原則</h3>
+          <ul class="list">
+            <li>每個片段只做一件事（一組對白、一個動作）</li>
+            <li>超過 10 秒的對白要拆成兩段</li>
+            <li>不要在同一個片段要求太多鏡頭動作</li>
+            <li>保留原本故事結構，只在製作階段拆開，最後在時間軸組合</li>
+          </ul>
+
+          <div class="callout tip" style="margin-top:16px;">
+            <div class="callout-icon">💡</div>
+            <div><b>操作小撇步：在時間軸最後塞一個空白場景</b>
+            <p>把 AI 影片拖拉進時間軸時，Google Vids 沒辦法把它放到最後一個位置，只能放倒數第二個。</p>
+            <p style="margin-top:6px;"><b>解法：</b>在時間軸尾端事先新增一個空白場景（「這個場景沒有任何物件」）當佔位符，拖入 AI 片段後就會落在倒數第二格，而最後那個空白場景刪掉就好。</p></div>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab-setup-prompt">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">這段 Prompt 貼在每次生成的最前面，確保所有片段風格一致。依你的影片風格調整括號內的內容。</p>
+          <div class="prompt-code">Create a 10-second <span class="hi">[你的風格，例如：STYLISED 3D CARTOON ANIMATION]</span>
+using the provided reference images.
+
+CRITICAL: <span class="hi">[明確排除不要的風格]</span>
+e.g. NOT live-action. NOT photorealistic.
+
+Keep <span class="hi">[角色名稱]</span> identical to the reference images:
+same faces, hairstyles, <span class="hi">[服裝描述]</span>.
+
+Preserve <span class="hi">[場景描述]</span>:
+same <span class="hi">[列出要固定的元素]</span>,
+<span class="hi">[光線描述，例如：warm golden afternoon lighting]</span>.</div>
+          <p style="font-size:12px;color:var(--muted);">固定這段後，每次只需接上當段的鏡頭、動作、對白描述。</p>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="setup">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/vids-interface.png" class="active" data-label="AI 短片面板：上傳參考圖、輸入 Prompt、插入時間軸">
+            <img src="hanoi-guide-assets/vids-settings.png" data-label="設定面板：模型（Omni）、解析度（720p）、影片長度">
+            <img src="hanoi-guide-assets/tip-blank-scene.png" data-label="💡 小撇步：時間軸最後塞一個空白場景，解決 AI 片段無法拖到最末位的問題">
+            <div class="img-label">AI 短片面板：上傳參考圖、輸入 Prompt、插入時間軸</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/vids-interface.png"></div>
+            <div class="gallery-thumb" data-idx="1"><img src="hanoi-guide-assets/vids-settings.png"></div>
+            <div class="gallery-thumb" data-idx="2"><img src="hanoi-guide-assets/tip-blank-scene.png"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 怎麼寫 Prompt ── -->
+  <div class="page" id="page-prompt">
+    <div class="page-full">
+      <div class="page-title">怎麼寫 Prompt</div>
+      <div class="page-desc">每次生成分兩部分：固定的「風格基礎 Prompt」＋當段的「動作 Prompt」。</div>
+
+      <div class="section-card">
+        <h3>當段專屬 Prompt 結構</h3>
+        <div class="prompt-code"><span class="dim">// 鏡頭（優先寫穩定鏡頭，避免推近/平移）</span>
+Use a stable medium-wide shot.
+<span class="dim">// 或：medium close-up of [角色名] from the waist up</span>
+No zoom. No panning. One continuous stable shot.
+
+<span class="dim">// 動作（簡潔，一個動作就好）</span>
+<span class="hi">[角色名]</span> <span class="hi">[做什麼動作]</span>.
+
+<span class="dim">// 對白</span>
+<span class="hi">[角色名]</span> says in <span class="hi">[British / American]</span> English:
+"<span class="hi">[台詞]</span>"
+
+<span class="dim">// 音效</span>
+Soft background ambience. Dialogue must be clear.
+
+<span class="dim">// 限制（有需要才加）</span>
+Do not add subtitles or on-screen text.
+Do not add new characters or objects.</div>
+      </div>
+
+      <div class="section-card">
+        <h3>聲音一致性</h3>
+        <div class="callout info" style="margin-bottom:0;">
+          <div class="callout-icon">ℹ️</div>
+          <div><b>目前限制：Google Vids 的聲音每段是重新生成的</b><p>在 Prompt 裡描述角色聲音特徵可以降低差距，但無法完全鎖定。如需高度一致的聲音，考慮後製統一配音。</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 案例 1 ── -->
+  <div class="page" id="page-case1">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="c1-desc">描述</div>
+          <div class="tab-btn" data-tab="c1-prompt">Prompt</div>
+        </div>
+        <div class="tab-pane active" id="tab-c1-desc">
+          <h3>AI 生成了真人影片，不是動畫</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：視覺風格跑掉</p>
+
+          <div class="callout problem">
+            <div class="callout-icon">❌</div>
+            <div><b>結果：生成了寫實風格的真人影片</b><p>背景也和設定圖不同，AI 重新設計了整個河內街道。</p></div>
+          </div>
+
+          <div class="callout tip">
+            <div class="callout-icon">🔍</div>
+            <div><b>根本原因</b><p>「cinematic」被解讀成真人電影風格；過度描述環境讓 AI 自由發揮，而不是參考上傳的設定圖。</p></div>
+          </div>
+
+          <div class="callout lesson" style="margin-top:14px;">
+            <div class="callout-icon">✅</div>
+            <div><b>修正後</b><p>加上 <code>STYLISED 3D CARTOON ANIMATION</code> 和 <code>NOT live-action</code>，並移除詳細的環境描述——把環境細節交給設定圖去控制。</p></div>
+          </div>
+
+          <div class="principle" style="margin-top:14px;">
+            <b>學到的原則</b>
+            <p>設定圖越完整，Prompt 裡的環境描述就應該越簡短。過度描述反而讓 AI 覺得可以自由生成。</p>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab-c1-prompt">
+          <div class="prompt-label bad">原始 Prompt（問題在這幾行）</div>
+          <div class="prompt-code">Create a 10-second <span class="hi">cinematic 3D animated scene</span>...
+<span class="hi">High-quality stylised 3D family animation...</span>
+<span class="hi">A beautiful tree-lined pedestrian walkway beside Hoan Kiem Lake...</span>
+[接著詳細描述環境、動作、對白]</div>
+
+          <div class="prompt-label good">修正版 Prompt</div>
+          <div class="prompt-code"><span class="add">Animate the provided reference image as a
+STYLISED 3D CARTOON ANIMATION.</span>
+<span class="add">CRITICAL: NOT live-action. NOT photorealistic.
+NOT realistic human video.</span>
+
+<span class="add">Use the reference images as the exact visual foundation,
+not merely as inspiration.</span>
+<span class="add">Do not redesign or reinterpret the characters or background.</span>
+
+<span class="del">詳細描述環境（湖泊、樹木、建築⋯⋯）</span>
+<span class="dim">// 移除冗長的環境描述，交給設定圖去控制</span></div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="c1">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/problem-realistic.png" class="active" data-label="❌ 結果：生成了寫實真人影片（未指定動畫風格）">
+            <img src="hanoi-guide-assets/ref-key-visual.png" data-label="✅ 目標：主視覺圖，3D 卡通動畫風格">
+            <img src="hanoi-guide-assets/ref-character-sheet.png" data-label="✅ 參考：角色設定圖（Linh & Oliver 外型細節）">
+            <div class="img-label">❌ 結果：生成了寫實真人影片（未指定動畫風格）</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/problem-realistic.png"></div>
+            <div class="gallery-thumb" data-idx="1"><img src="hanoi-guide-assets/ref-key-visual.png"></div>
+            <div class="gallery-thumb" data-idx="2"><img src="hanoi-guide-assets/ref-character-sheet.png"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 案例 2 ── -->
+  <div class="page" id="page-case2">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="c2-desc">描述</div>
+          <div class="tab-btn" data-tab="c2-prompt">Prompt</div>
+        </div>
+        <div class="tab-pane active" id="tab-c2-desc">
+          <h3>背景被重新設計，多了一個大遮棚</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：背景元素走樣</p>
+
+          <div class="callout problem">
+            <div class="callout-icon">❌</div>
+            <div><b>結果：畫廊被加上大型遮棚、畫作排列改變</b><p>原本設定圖裡沒有遮棚，AI 自作主張添加了。長椅也跑到後方。</p></div>
+          </div>
+
+          <div class="callout tip">
+            <div class="callout-icon">🔍</div>
+            <div><b>根本原因</b><p>1. 要求「鏡頭推近畫作」讓 AI 重新建構新角度，改變了背景配置。<br>2. 沒有明確禁止 AI 不能加入的元素，AI 自行「補完」了遮棚。</p></div>
+          </div>
+
+          <div class="callout lesson" style="margin-top:14px;">
+            <div class="callout-icon">✅</div>
+            <div><b>修正後</b><p>移除鏡頭移動的要求；明確加入 <code>NO roof, NO canopy, NO tent</code>；指定主視覺為 Master Reference。</p></div>
+          </div>
+
+          <div class="principle orange" style="margin-top:14px;">
+            <b>學到的原則</b>
+            <p>禁止要說具體，不能只說「保持原本」——要直接寫你不想看到什麼。</p>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab-c2-prompt">
+          <div class="prompt-label bad">原始 Prompt（問題在最後一行）</div>
+          <div class="prompt-code">Oliver: "They're all famous places in Hanoi!"
+Linh smiles and nods.
+
+<span class="hi">After Oliver finishes, the camera gently moves closer
+to the four framed paintings.</span>
+<span class="dim">// ↑ 這句讓 AI 重建場景並加入遮棚</span></div>
+
+          <div class="prompt-label good">修正版 Prompt</div>
+          <div class="prompt-code"><span class="add">The main reference image is the MASTER REFERENCE.
+Animate that existing composition.
+Do not create a new interpretation.</span>
+
+<span class="add">There is NO roof, NO canopy, NO tent,
+NO covered structure.</span>
+
+<span class="add">One continuous, stable medium-wide shot.
+No camera movement. No zoom. No panning.</span>
+
+<span class="del">After Oliver finishes, the camera gently moves
+closer to the four framed paintings.</span></div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="c2">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/problem-canopy.png" class="active" data-label="❌ 結果：畫廊被加了遮棚，畫作排列改變，長椅跑到後方">
+            <img src="hanoi-guide-assets/ref-key-visual.png" data-label="✅ 目標：主視覺圖，無遮棚，畫作直接掛在牆面">
+            <img src="hanoi-guide-assets/ref-scene.png" data-label="✅ 參考：場景設定圖（畫廊背景，無角色）">
+            <div class="img-label">❌ 結果：畫廊被加了遮棚，畫作排列改變，長椅跑到後方</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/problem-canopy.png"></div>
+            <div class="gallery-thumb" data-idx="1"><img src="hanoi-guide-assets/ref-key-visual.png"></div>
+            <div class="gallery-thumb" data-idx="2"><img src="hanoi-guide-assets/ref-scene.png"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 案例 3 ── -->
+  <div class="page" id="page-case3">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="c3-desc">描述</div>
+          <div class="tab-btn" data-tab="c3-prompt">Prompt</div>
+        </div>
+        <div class="tab-pane active" id="tab-c3-desc">
+          <h3>色調變白 + 站位跑掉</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：切換到近景後出現新問題</p>
+
+          <div class="callout info">
+            <div class="callout-icon">💡</div>
+            <div><b>前提：背景說話中途跳動，改用角色近景策略</b><p>背景持續不穩定，改成「只拍 Oliver 中近景、背景虛化」。跳動問題消失，但帶來了新問題。</p></div>
+          </div>
+
+          <div class="callout problem" style="margin-top:10px;">
+            <div class="callout-icon">❌</div>
+            <div>
+              <b>新問題 1：色調變白</b>
+              <p>溫暖黃昏光變成偏白的日光。</p>
+              <b style="display:block;margin-top:6px;">新問題 2：角色站位左右跑掉</b>
+              <p>Linh 在左、Oliver 在右的設定跑掉，AI 把近景當成新構圖重新排位。</p>
+            </div>
+          </div>
+
+          <div class="callout tip">
+            <div class="callout-icon">🔍</div>
+            <div><b>根本原因</b><p>AI 把近景當成獨立新鏡頭，自動校正光線為標準日光並重新安排構圖。</p></div>
+          </div>
+
+          <div class="callout lesson" style="margin-top:14px;">
+            <div class="callout-icon">✅</div>
+            <div><b>修正後</b><p>明確指定左右站位；禁止 pale/grey/cool/white；說明這段是「從主視覺裁切的近景，不是新構圖」。</p></div>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab-c3-prompt">
+          <div class="prompt-label bad">換策略後的 Prompt（帶來了新問題）</div>
+          <div class="prompt-code">Use a stable medium close-up of Oliver from the waist up.
+Visual focus must stay on Oliver.
+<span class="hi">Background: soft, slightly blurred, visually unobtrusive.</span>
+<span class="dim">// ↑ 背景沒指定色溫，AI 校正成標準日光</span>
+Linh may appear only at the edge of the frame.
+<span class="dim">// ↑ 沒指定站位，AI 重新排了構圖</span></div>
+
+          <div class="prompt-label good">最終修正版 Prompt</div>
+          <div class="prompt-code"><span class="add">This clip should feel like a closer crop
+from the master scene, not a newly redesigned shot.</span>
+
+<span class="add">Keep the original screen direction:
+- Linh is on the LEFT
+- Oliver is on the RIGHT</span>
+
+<span class="add">Background must NOT become pale, grey,
+cool, washed-out, or white.
+Do NOT use neutral daylight.
+Maintain warm golden light, soft yellow-orange highlights.</span>
+
+<span class="add">Do not create a new composition;
+simply animate a closer right-side framing
+of Oliver from the existing master scene.</span></div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="c3">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/problem-white-position.png" class="active" data-label="❌ 結果：背景偏白、Oliver 在左側（站位跑掉）">
+            <img src="hanoi-guide-assets/ref-key-visual.png" data-label="✅ 目標：主視覺圖，Linh 左、Oliver 右，黃昏暖光">
+            <div class="img-label">❌ 結果：背景偏白、Oliver 在左側（站位跑掉）</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/problem-white-position.png"></div>
+            <div class="gallery-thumb" data-idx="1"><img src="hanoi-guide-assets/ref-key-visual.png"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 案例 4 ── -->
+  <div class="page" id="page-case4">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="c4-desc">描述</div>
+          <div class="tab-btn" data-tab="c4-prompt">Prompt</div>
+        </div>
+        <div class="tab-pane active" id="tab-c4-desc">
+          <h3>人物聲音突然變成熟</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：音訊——聲線與年齡不符</p>
+
+          <div class="callout problem">
+            <div class="callout-icon">❌</div>
+            <div><b>結果：Oliver 和 Linh 的聲音突然變成「國中變聲期」的感覺</b><p>前三段聲音都像 12 歲兒童，Clip 4 突然變成成熟的男女聲線，和前面片段明顯脫節。</p></div>
+          </div>
+
+          <div class="callout tip">
+            <div class="callout-icon">🔍</div>
+            <div><b>根本原因</b><p>Prompt 只寫「12-year-old voice」，AI 把這解讀為角色年齡標籤，不是聲線特徵描述。每段影片是獨立生成的，AI 不會自動沿用前面片段的聲線設定。</p></div>
+          </div>
+
+          <div class="callout lesson" style="margin-top:14px;">
+            <div class="callout-icon">✅</div>
+            <div><b>修正後</b><p>改成描述聲線特徵而不是年齡數字。明確排除：deep voice、mature resonance、voice cracking、adult narrator。</p></div>
+          </div>
+
+          <div class="principle red" style="margin-top:14px;">
+            <b>學到的原則</b>
+            <p>聲線不用年齡描述，用特徵描述。「尚未變聲的男生聲線」比「12歲男生」更準確。</p>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab-c4-prompt">
+          <div class="prompt-label bad">原始寫法（問題）</div>
+          <div class="prompt-code">Oliver speaks with the voice of a <span class="hi">cheerful 12-year-old boy</span>.
+<span class="dim">// ↑ 只描述年齡，AI 理解為角色設定，不是聲線要求</span></div>
+
+          <div class="prompt-label good">修正版（加到每一段）</div>
+          <div class="prompt-code"><span class="add">VOICE CONSISTENCY — HIGHEST PRIORITY
+
+Oliver:
+A light, bright, youthful, PRE-PUBESCENT British boy's voice.
+Before his voice has deepened.
+Higher-pitched than an adult male voice, but not squeaky.
+No deep voice, bass resonance, mature male tone,
+voice cracking, or adult narrator voice.
+
+Linh:
+A light, bright, youthful Vietnamese schoolgirl's voice.
+Clear English with a subtle Vietnamese accent.
+No mature adult female voice or professional narrator tone.
+
+Match the vocal style of the PREVIOUS SUCCESSFUL CLIPS.</span></div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="c4">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/ref-character-sheet.png" class="active" data-label="目標：Linh（12歲女生）和 Oliver（12歲英國男生）的外型與聲線特徵">
+            <div class="img-label">目標：Linh（12歲女生）和 Oliver（12歲英國男生）的外型與聲線特徵</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/ref-character-sheet.png"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 案例 5 ── -->
+  <div class="page" id="page-case5">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="c5-desc">描述</div>
+          <div class="tab-btn" data-tab="c5-prompt">Prompt</div>
+        </div>
+        <div class="tab-pane active" id="tab-c5-desc">
+          <h3>台詞講完後，AI 自動加入背景音樂</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：音訊——不需要的背景音樂</p>
+
+          <div class="callout problem">
+            <div class="callout-icon">❌</div>
+            <div><b>結果：角色說完話後，靜止畫面中突然出現背景音樂</b><p>台詞講完，畫面切到等待反應的靜止鏡頭時，AI 自動用音樂填補空白。即使 Prompt 有寫「No background music」，仍然出現。</p></div>
+          </div>
+
+          <div class="callout tip">
+            <div class="callout-icon">🔍</div>
+            <div><b>根本原因</b><p>1. Prompt 安排了「說完話後停留幾秒等待反應」的結尾畫面，AI 把這段空白解讀為需要填補音效的地方。<br>2. 「No background music」不夠具體，AI 不知道「對話結束後的空白也不行」。</p></div>
+          </div>
+
+          <div class="callout lesson" style="margin-top:14px;">
+            <div class="callout-icon">✅</div>
+            <div><b>修正後</b><p>不安排台詞結束後的等待畫面；讓最後一個字盡量靠近影片結尾；禁止語要說「Do not fill silent moments with music」，禁到具體場景。</p></div>
+          </div>
+
+          <div class="principle orange" style="margin-top:14px;">
+            <b>學到的原則</b>
+            <p>不要讓影片結尾有空白時間。台詞講完就結束，不留反應畫面，是防止 AI 插入音樂最有效的方式。</p>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab-c5-prompt">
+          <div class="prompt-label bad">有問題的寫法</div>
+          <div class="prompt-code">Oliver says: "They're all famous places in Hanoi!"
+<span class="hi">After speaking, he gives a small, satisfied smile
+and looks slightly left towards Linh.</span>
+<span class="dim">// ↑ 這段「說完後看向 Linh 的反應畫面」造成空白，AI 用音樂填補</span>
+
+No background music at any point.
+<span class="dim">// ↑ 說了禁止，但沒說「結束後的空白也不行」</span></div>
+
+          <div class="prompt-label good">修正版</div>
+          <div class="prompt-code"><span class="add">DIALOGUE TIMING — CRITICAL
+
+Begin the character's dialogue almost immediately
+after the clip starts.
+
+Time the performance so that the final spoken word
+occurs near the END of the clip.
+
+Do NOT add a silent reaction, long pause,
+or waiting period after the dialogue.
+
+End the scene immediately after the final spoken word.</span>
+
+<span class="add">AUDIO — ABSOLUTELY NO MUSIC
+
+NO background music at any point.
+No melodies, jingles, or musical transitions.
+Do not fill silent moments with music.
+Do not introduce music when the character stops speaking.
+No outro or ending sound effect.</span>
+
+<span class="del">After speaking, he gives a small, satisfied smile
+and looks slightly left towards Linh.</span></div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="c5">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/ref-key-visual.png" class="active" data-label="這是音訊問題，無截圖可對照；此圖為主視覺參考">
+            <div class="img-label">這是音訊問題，無截圖可對照；此圖為主視覺參考</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/ref-key-visual.png"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 案例 6 ── -->
+  <div class="page" id="page-case6">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="c6-desc">描述</div>
+          <div class="tab-btn" data-tab="c6-prompt">Prompt</div>
+        </div>
+        <div class="tab-pane active" id="tab-c6-desc">
+          <h3>台詞被分配給錯誤的角色</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：音訊——說話者分配錯誤</p>
+
+          <div class="callout problem">
+            <div class="callout-icon">❌</div>
+            <div><b>結果：Linh 的台詞「Seat /iː/」跑去 Oliver 嘴裡講</b><p>同一段有兩位角色說話，AI 自由決定誰說哪句，導致 Linh 的發音示範被 Oliver 接手說完。</p></div>
+          </div>
+
+          <div class="callout tip">
+            <div class="callout-icon">🔍</div>
+            <div><b>根本原因</b><p>Prompt 只寫了「對白內容」，沒有明確標記「這句是誰說的、另一個人這時候閉嘴」。AI 自行決定說話順序，容易在句子交接時搞錯說話者。</p></div>
+          </div>
+
+          <div class="callout lesson" style="margin-top:14px;">
+            <div class="callout-icon">✅</div>
+            <div><b>修正後</b><p>用「SPEAKING TURN 1 - OLIVER ONLY」和「SPEAKING TURN 2 - LINH ONLY」結構明確標注每個說話輪次；明確寫出「另一個人 mouth closed, remains completely silent」。</p></div>
+          </div>
+
+          <div class="principle" style="margin-top:14px;">
+            <b>學到的原則</b>
+            <p>一段只有一個說話者是最安全的做法。如果必須兩人輪流，每個說話輪次都要獨立標注，並且明確告訴 AI 另一個人「不說話、嘴巴閉著」。</p>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab-c6-prompt">
+          <div class="prompt-label bad">有問題的寫法</div>
+          <div class="prompt-code">Oliver says:
+"Sit? Seat? They sound different!"
+
+Linh smiles and explains:
+<span class="hi">"Yes! Sit /ɪ/. Seat /iː/."</span>
+<span class="dim">// ↑ 只描述對話流程，AI 在「Seat /iː/」換回 Oliver 的聲音</span></div>
+
+          <div class="prompt-label good">修正版</div>
+          <div class="prompt-code"><span class="add">There are exactly TWO speaking turns.
+
+SPEAKING TURN 1 — OLIVER ONLY
+Oliver says:
+"Sit? Seat? They sound different!"
+Oliver finishes his sentence, closes his mouth,
+and remains COMPLETELY SILENT for the rest of the clip.
+
+SPEAKING TURN 2 — LINH ONLY
+Linh says:
+"Yes! Sit /ɪ/. Seat /iː/."
+Use ONE CONTINUOUS female child voice for Linh's ENTIRE sentence.
+Do NOT split Linh's sentence between two speakers.
+Oliver must NOT say "Seat /iː/".
+While Linh speaks, Oliver listens silently with his mouth CLOSED.</span></div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="c6">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/ref-key-visual.png" class="active" data-label="這是音訊問題，無截圖可對照；Linh（左）和 Oliver（右）是各自獨立的說話者">
+            <div class="img-label">這是音訊問題，無截圖可對照；Linh（左）和 Oliver（右）是各自獨立的說話者</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/ref-key-visual.png"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 案例 7 ── -->
+  <div class="page" id="page-case7">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="c7-desc">描述</div>
+          <div class="tab-btn" data-tab="c7-prompt">Prompt</div>
+        </div>
+        <div class="tab-pane active" id="tab-c7-desc">
+          <h3>越南地名 Bat Trang 發音跑掉</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：音訊——地名發音不一致</p>
+
+          <div class="callout problem">
+            <div class="callout-icon">❌</div>
+            <div><b>結果：Oliver 把 Bat Trang 念成像英文「Bat Train」；Linh 念法也不同</b><p>兩位角色同一個地名念法不一致，而且 Oliver 的發音明顯不像越南地名。</p></div>
+          </div>
+
+          <div class="callout tip">
+            <div class="callout-icon">🔍</div>
+            <div><b>根本原因</b><p>AI 用英文拼字規則推測 <code>Trang</code> 的發音，解讀成英文字 "train" 的相似音。越南語地名沒有聲調標記，AI 無法判斷正確發音。</p></div>
+          </div>
+
+          <div class="callout info" style="margin-top:14px;">
+            <div class="callout-icon">ℹ️</div>
+            <div><b>Bát Tràng 的正確越南語發音</b><p>河內口音近似「<b>巴特・張</b>」，第二音節 <code>Tràng</code> 起音類似英文 <code>ch</code>，尾巴帶鼻音 <code>ng</code>，聲調往下降。不是「train」。</p></div>
+          </div>
+
+          <div class="callout lesson" style="margin-top:14px;">
+            <div class="callout-icon">✅</div>
+            <div><b>修正後</b><p>在台詞裡把 <code>Bat Trang</code> 改成語音近似拼法 <code>Baht Chahng</code>，讓 AI TTS 念得接近越南語。畫面文字仍維持正式拼法 <code>Bat Trang</code>。</p></div>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab-c7-prompt">
+          <div class="prompt-label bad">原始寫法（容易念歪）</div>
+          <div class="prompt-code">Oliver says:
+"I like <span class="hi">Bat Trang</span>! The workshop is more interesting
+than the railway station!"
+<span class="dim">// ↑ AI 把 "Trang" 念成英文字，接近 "train"</span></div>
+
+          <div class="prompt-label good">修正版（語音拼法 + 說明）</div>
+          <div class="prompt-code"><span class="add">PLACE NAME PRONUNCIATION — CRITICAL
+
+Use the spoken pronunciation "Baht Chahng" for Bat Trang.
+This guides AI TTS to approximate the Vietnamese "Bát Tràng".
+
+Do NOT pronounce it like "Bat Train" or English "trang".
+Use the same pronunciation consistently for both characters.</span>
+
+Oliver says:
+"I like <span class="add">Baht Chahng</span>! The workshop is more interesting
+than the railway station!"
+
+Linh says:
+"But <span class="add">Baht Chahng</span> is farther from the city centre
+than the cathedral."
+
+<span class="dim">// 畫面標籤、字幕仍用正式拼法 Bat Trang / Bát Tràng</span></div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="c7">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/ref-key-visual.png" class="active" data-label="這是音訊問題，無截圖可對照">
+            <div class="img-label">這是音訊問題，無截圖可對照</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/ref-key-visual.png"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 案例 8 ── -->
+  <div class="page" id="page-case8">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="c8-desc">描述</div>
+          <div class="tab-btn" data-tab="c8-prompt">Prompt</div>
+        </div>
+        <div class="tab-pane active" id="tab-c8-desc">
+          <h3>每段分開生成，片段間場景不連貫</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：構圖——多片段剪輯的空間一致性</p>
+
+          <div class="callout problem">
+            <div class="callout-icon">❌</div>
+            <div><b>結果：片段接起來，背景物件跑位、人物站位左右互換，看起來像不同場景拼在一起</b><p>每段是獨立生成的，AI 不會延續上一段的場景狀態。強制要求「保持一樣」效果有限。</p></div>
+          </div>
+
+          <div class="callout tip">
+            <div class="callout-icon">🔍</div>
+            <div><b>根本原因</b><p>Google Vids 每次生成都是獨立的 AI 推斷，不是「把上一張圖再加動畫」。即使 Prompt 完全相同，生成結果也不會像同一個場景拍出來的。</p></div>
+          </div>
+
+          <div class="callout lesson" style="margin-top:14px;">
+            <div class="callout-icon">✅</div>
+            <div><b>解法：採用「說話者單人近景」正反拍策略</b><p>誰說話鏡頭就在誰身上。說話者的單人中近景背景模糊，觀眾注意力在角色臉上，自然不會察覺背景不一致。</p></div>
+          </div>
+
+          <h4 style="margin-top:16px;">三種固定鏡頭</h4>
+          <table>
+            <tr><th>鏡頭類型</th><th>構圖規則</th><th>使用時機</th></tr>
+            <tr><td><b>A｜Oliver 說話</b></td><td>Oliver 在畫面<b>右半部</b>，視線朝<b>左</b>（朝 Linh 方向）；背景輕微模糊</td><td>Oliver 的每一句台詞</td></tr>
+            <tr><td><b>B｜Linh 說話</b></td><td>Linh 在畫面<b>左半部</b>，視線朝<b>右</b>（朝 Oliver 方向）；背景輕微模糊</td><td>Linh 的每一句台詞</td></tr>
+            <tr><td><b>C｜雙人全景</b></td><td>兩人 + 四幅畫作同框；背景完整呈現</td><td>場景建立、最後共同做決定；盡量少用</td></tr>
+          </table>
+
+          <div class="callout info">
+            <div class="callout-icon">💡</div>
+            <div><b>額外好處：同時解決說話者錯誤問題</b><p>每段只有一個人說話，AI 就不需要決定誰說哪句。說話者錯誤（案例 6）的機率大幅降低。</p></div>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab-c8-prompt">
+          <div class="prompt-label bad">錯誤策略（試圖讓每段都保持相同場景）</div>
+          <div class="prompt-code">Preserve the exact outdoor gallery... Keep the same four
+framed paintings, wooden stands, park bench, trees...
+<span class="hi">Continue naturally from the previous clip.</span>
+<span class="dim">// ↑ 背景指令越詳細，AI 越容易自由重建；「延續上一段」AI 根本做不到</span></div>
+
+          <div class="prompt-label good">Oliver 說話｜鏡頭 A</div>
+          <div class="prompt-code"><span class="add">CHARACTER AND CAMERA
+Show ONLY Oliver (12-year-old British schoolboy).
+Use a stable medium close-up, framed from the chest up.
+Oliver occupies the RIGHT half of the frame,
+looking slightly LEFT toward Linh off-camera.
+Linh is off-camera and does not appear or speak.
+
+BACKGROUND
+The background is softly blurred — subtle hints of
+green trees and the outdoor gallery.
+Do NOT show a detailed wide view of the gallery.
+Keep background visually stable and unobtrusive.
+Maintain warm golden-hour colour palette.</span></div>
+
+          <div class="prompt-label good">Linh 說話｜鏡頭 B</div>
+          <div class="prompt-code"><span class="add">CHARACTER AND CAMERA
+Show ONLY Linh (12-year-old Vietnamese schoolgirl).
+Use a stable medium close-up, framed from the chest up.
+Linh occupies the LEFT half of the frame,
+looking slightly RIGHT toward Oliver off-camera.
+Oliver is off-camera and does not appear or speak.
+
+BACKGROUND
+The background is softly blurred — subtle hints of
+trees and the outdoor gallery.
+Do NOT show a detailed wide view of the gallery.
+Maintain warm golden-hour colour palette.</span></div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="c8">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/case8-oliver-closeup.png" class="active" data-label="✅ 鏡頭 A：Oliver 中近景——右半部、視線朝左，背景輕微模糊">
+            <img src="hanoi-guide-assets/case8-linh-closeup.png" data-label="✅ 鏡頭 B：Linh 中近景——左半部、視線朝右，背景帶河內龜塔輕微模糊">
+            <video src="hanoi-guide-assets/case8-inconsistent-scenes.mov" controls data-label="❌ 問題：同一場景不同段生成，接起來背景跑位"></video>
+            <video src="hanoi-guide-assets/case8-shot-reverse-shot.mov" controls data-label="✅ 修正：誰說話鏡頭就在誰身上（正反拍策略）"></video>
+            <div class="img-label">✅ 鏡頭 A：Oliver 中近景——右半部、視線朝左，背景輕微模糊</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/case8-oliver-closeup.png"></div>
+            <div class="gallery-thumb" data-idx="1"><img src="hanoi-guide-assets/case8-linh-closeup.png"></div>
+            <div class="gallery-thumb" data-idx="2"><div class="video-thumb"><div class="vt-icon">▶</div><div class="vt-label">❌ 問題</div></div></div>
+            <div class="gallery-thumb" data-idx="3"><div class="video-thumb"><div class="vt-icon">▶</div><div class="vt-label">✅ 修正</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 案例 9 ── -->
+  <div class="page" id="page-case9">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="c9-desc">描述</div>
+          <div class="tab-btn" data-tab="c9-prompt">Prompt</div>
+        </div>
+        <div class="tab-pane active" id="tab-c9-desc">
+          <h3>Prompt 觸發內容審查，生成被擋下</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：平台限制——內容政策誤判</p>
+
+          <div class="callout problem">
+            <div class="callout-icon">❌</div>
+            <div><b>結果：「這項要求似乎違反相關條款，請試著提出其他問題。」</b><p>台詞本身完全正常（<code>"Good idea! And it's beautiful!"</code>），被擋下的原因不是內容，而是 Prompt 的描述方式。</p></div>
+          </div>
+
+          <div class="callout tip">
+            <div class="callout-icon">🔍</div>
+            <div><b>懷疑的根本原因</b><p>多個關於未成年人外貌、年齡和身體特徵的描述組合在一起，觸發了自動審查：</p>
+            <ul class="list" style="margin-top:6px;">
+              <li><code>12-year-old British boy</code></li>
+              <li><code>youthful facial proportions</code></li>
+              <li><code>framed from the chest up</code></li>
+              <li><code>No mature teenage voice</code></li>
+            </ul>
+            <p style="margin-top:6px;">單獨一條沒問題，放在一起可能被誤判。確切原因 Google 不會說明。</p></div>
+          </div>
+
+          <div class="callout lesson" style="margin-top:14px;">
+            <div class="callout-icon">✅</div>
+            <div><b>修正後：大幅精簡 Prompt，拿掉所有生理特徵描述</b><p>不再重複描述年齡、身體部位、聲音特徵清單。只說「用參考圖的風格」、「說這句話」、「這樣的鏡頭」。</p></div>
+          </div>
+
+          <div class="principle red" style="margin-top:14px;">
+            <b>學到的原則</b>
+            <p>遇到誤擋：先大幅精簡 Prompt，移除年齡+身體描述的組合，不要嘗試繞過審查。如果精簡版仍被擋，透過 Help → Help Vids improve 回報誤判。</p>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab-c9-prompt">
+          <div class="prompt-label bad">容易觸發審查的寫法（描述太多生理特徵）</div>
+          <div class="prompt-code">CHARACTER — OLIVER ONLY
+Show Oliver, the <span class="hi">12-year-old British schoolboy</span>.
+Preserve his exact <span class="hi">facial appearance, short tousled
+light-brown hair</span>, white school shirt, navy trousers.
+Use a stable medium close-up of Oliver,
+<span class="hi">framed from the chest up.</span>
+
+VOICE — STRICT CONSISTENCY
+Oliver must sound like a natural <span class="hi">12-year-old primary
+school student</span>, NOT mature teenagers or adults.
+A light, bright, <span class="hi">youthful pre-teen boy's voice</span>,
+<span class="hi">before his voice has deepened</span>.
+<span class="hi">No deep voice, mature male resonance, voice cracking</span>,
+or adult narrator-style delivery.
+<span class="dim">// ↑ 多個涉及未成年外貌、年齡、聲音的描述同時出現</span></div>
+
+          <div class="prompt-label good">精簡版（把年齡/身體描述換成參考圖指向）</div>
+          <div class="prompt-code"><span class="add">Create a stylised 3D animated educational scene
+using the provided reference images.
+
+VISUAL STYLE:
+Match the original reference images. Preserve the same
+colourful 3D animated appearance, character design,
+and warm golden-afternoon lighting.
+This is animation, not live-action.
+
+CHARACTER AND CAMERA:
+Show Oliver, the British student from the reference images.
+Use a stable medium close-up with Oliver on the right side
+of the frame, looking slightly left towards Linh off-camera.
+Softly blurred background. Camera stationary throughout.
+
+ACTION:
+Oliver smiles and responds enthusiastically.
+
+EXACT DIALOGUE:
+Oliver says exactly:
+"Good idea! And it's beautiful!"
+No other words. Begin speaking immediately.
+Finish near the end of the clip.
+
+VOICE:
+Use the same light, youthful British schoolboy voice
+established in the earlier scenes.
+
+AUDIO:
+Dialogue only. Absolutely no background music.
+
+ENDING:
+End immediately after the final spoken word.</span></div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="c9">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/problem-content-policy.png" class="active" data-label="❌ 「這項要求似乎違反相關條款」——台詞沒問題，是 Prompt 的描述方式觸發了審查">
+            <div class="img-label">❌ 「這項要求似乎違反相關條款」——台詞沒問題，是 Prompt 的描述方式觸發了審查</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/problem-content-policy.png"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 速查原則 ── -->
+  <div class="page" id="page-cheatsheet">
+    <div class="page-full">
+      <div class="page-title">速查：常見問題 & 原則</div>
+      <div class="page-desc">遇到問題時直接查這張表。</div>
+
+      <div class="section-card">
+        <h3>常見問題快速對照</h3>
+        <table>
+          <tr><th>問題現象</th><th>根本原因</th><th>解法</th></tr>
+          <tr><td>生成了真人影片</td><td>「cinematic」被解讀成電影</td><td>開頭寫 <code>STYLISED 3D CARTOON ANIMATION</code>，加 <code>NOT live-action</code></td></tr>
+          <tr><td>背景被重新設計</td><td>要求鏡頭移動 / 環境描述太多</td><td>固定鏡頭；把主視覺定義為 Master Reference；減少環境文字描述</td></tr>
+          <tr><td>AI 自行添加元素（如遮棚）</td><td>沒有明確禁止</td><td>明確列出：<code>NO roof, NO canopy</code></td></tr>
+          <tr><td>說話中途背景跳動</td><td>場景複雜，AI 一致性不夠</td><td>改用角色中近景，背景虛化</td></tr>
+          <tr><td>色調變白 / 偏冷</td><td>AI 自動校正成標準日光</td><td>指定 warm golden + 禁止 <code>pale / grey / cool / white</code></td></tr>
+          <tr><td>角色站位左右跑掉</td><td>AI 把近景當新構圖</td><td>指定「Linh 在左，Oliver 在右」；說明這是從主視覺裁切的近景</td></tr>
+          <tr><td>文字 / 地名出現錯誤</td><td>AI 處理長文字不穩定</td><td>後製用文字圖層加入，不交給 AI 生成</td></tr>
+          <tr><td>人物聲音突然變成熟</td><td>只寫年齡，不夠描述聲線特徵</td><td>改用特徵描述：<code>pre-pubescent, before voice has deepened</code>；明確排除 <code>deep, resonant, adult</code></td></tr>
+          <tr><td>台詞後自動加背景音樂</td><td>台詞結束後有空白，AI 用音樂填補</td><td>讓最後一個字靠近影片結尾；不安排「說完話後等待」的畫面；禁止寫明「Do not fill silent moments with music」</td></tr>
+          <tr><td>台詞被分配給錯誤角色</td><td>Prompt 沒明確指定每句話是誰說的</td><td>用 <code>SPEAKING TURN 1 — OLIVER ONLY</code> 結構；明確寫「另一人 mouth closed, remains silent」</td></tr>
+          <tr><td>越南地名發音跑掉</td><td>AI 用英文拼字規則推測越南語發音</td><td>台詞改用語音近似拼法 <code>Baht Chahng</code>（畫面文字仍用正式拼法 Bat Trang）</td></tr>
+          <tr><td>生成請求被擋下「似乎違反相關條款」</td><td>Prompt 裡多個涉及未成年外貌/年齡/身體描述的組合觸發自動審查</td><td>大幅精簡 Prompt；拿掉年齡數字、生理特徵清單、聲音特徵列表；改說「用參考圖的角色風格」</td></tr>
+        </table>
+      </div>
+
+      <div class="principle"><b>每段都要明確說你要的風格</b><p>不能假設 AI 記得上一段。<code>NOT live-action, NOT photorealistic</code> 每段都要寫。</p></div>
+      <div class="principle orange"><b>不要要求鏡頭移動</b><p>「推近」「平移」都會觸發 AI 重建環境。只用 <code>stable shot</code>。</p></div>
+      <div class="principle orange"><b>設定圖越完整，Prompt 裡的描述應該越短</b><p>過度描述環境反而讓 AI 覺得有自由發揮的空間，忽略參考圖。</p></div>
+      <div class="principle red"><b>禁止要說具體，不能只說「保持原本」</b><p>要直接寫你不想要什麼：<code>NO canopy</code>、<code>NOT pale</code>。</p></div>
+      <div class="principle green"><b>背景一直跳 → 改角色近景策略</b><p>不要繼續嘗試穩定背景。改成角色中近景、背景虛化，用構圖轉移注意力。</p></div>
+      <div class="principle"><b>聲線要描述特徵，不能只說年齡</b><p><code>12-year-old</code> 是角色標籤，不是聲線要求。要說 <code>pre-pubescent, before voice has deepened, no deep resonance</code>。</p></div>
+      <div class="principle orange"><b>台詞最後一個字要靠近影片結尾</b><p>說完話後有空白，AI 會用音樂填補。讓台詞結束 = 影片結束，徹底防止。</p></div>
+      <div class="principle red"><b>兩人輪流說話：每輪都要獨立標注 + 另一人閉嘴</b><p>用 <code>SPEAKING TURN 1 — OLIVER ONLY</code>；對方要寫 <code>mouth closed, remains completely silent</code>。</p></div>
+      <div class="principle green"><b>片段間場景不連貫 → 改用正反拍策略</b><p>不要試圖讓每段保持相同場景。誰說話就只拍誰的中近景，背景模糊，觀眾注意力在臉上就不會察覺背景跑掉。Oliver 說話在畫面右、看左；Linh 說話在畫面左、看右。</p></div>
+      <div class="principle red"><b>生成被平台擋下 → 先精簡 Prompt，不要繞過</b><p>遇到「違反相關條款」錯誤：移除所有年齡數字、外貌特徵、聲音特徵描述，改說「reference image 的角色風格」。不要嘗試換說法繞過審查——如果精簡後仍被擋，透過 Help → Help Vids improve 回報誤判。</p></div>
+    </div>
+  </div>
+
+  <!-- ── 參考資料 ── -->
+  <div class="page" id="page-resources">
+    <div class="page-full">
+      <div class="page-title">參考資料</div>
+      <div class="section-card">
+        <h3>本次製作過程的 AI 對話記錄</h3>
+        <p style="font-size:13.5px;color:var(--muted);margin-bottom:12px;">包含視覺風格選擇、腳本討論、Prompt 迭代的完整對話。</p>
+        <a href="https://chatgpt.com/share/6ad5cc94-c298-83e8-86b5-83638018ca22" target="_blank" class="ext-link">
+          ↗ ChatGPT 對話記錄：影片風格建議 & Prompt 迭代
+        </a>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div><!-- /app-body -->
+
+<script>
+// ── Navigation ──
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  const nav = document.querySelector(`.nav-item[data-page="${id}"]`);
+  if (nav) nav.classList.add('active');
+}
+
+document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+  item.addEventListener('click', () => showPage(item.dataset.page));
+});
+
+// ── Tabs ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tabId = btn.dataset.tab;
+    const parent = btn.closest('.split-left, .page-full');
+    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    parent.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const pane = document.getElementById('tab-' + tabId);
+    if (pane) pane.classList.add('active');
+  });
+});
+
+// ── Image / video gallery ──
+document.querySelectorAll('.gallery').forEach(gallery => {
+  const mainItems = gallery.querySelectorAll('.gallery-main img, .gallery-main video');
+  const label     = gallery.querySelector('.img-label');
+  const thumbs    = gallery.querySelectorAll('.gallery-thumb');
+
+  thumbs.forEach(thumb => {
+    thumb.addEventListener('click', () => {
+      const idx = parseInt(thumb.dataset.idx);
+      mainItems.forEach((item, i) => {
+        const active = i === idx;
+        item.classList.toggle('active', active);
+        if (item.tagName === 'VIDEO' && !active) item.pause();
+      });
+      thumbs.forEach((t, i) => t.classList.toggle('active', i === idx));
+      if (label && mainItems[idx]) {
+        label.textContent = mainItems[idx].dataset.label || '';
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
