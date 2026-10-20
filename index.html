@@ -1531,7 +1531,7 @@ End immediately after the final spoken word.</span></div>
 
           <div class="callout problem">
             <div class="callout-icon">❌</div>
-            <div><b>結果：同一個道具，每段影片的樣式差很多</b><p>例如：第一段的月曆是掛在牆上的大月曆（有文字、精細格子），第二段卻變成桌上小月曆、第三段又是另一個風格——觀眾看起來像是不同道具。</p></div>
+            <div><b>結果：角色手上拿的道具，每次重新生成的樣式都不一樣</b><p>例如：同一個角色手持月曆的片段，重新生成後月曆的大小、顏色、格式完全不同——這次是小型羊毛氈桌曆，下次變成有文字的白色掛曆，再生成又是另一種。接起來像是不同道具。</p></div>
           </div>
 
           <div class="callout tip">
@@ -1594,10 +1594,10 @@ and felt texture from the reference."</span></div>
       <div class="split-right">
         <div class="gallery" data-gallery="c10">
           <div class="gallery-main">
-            <img src="hanoi-guide-assets/case10-prop-consistent.png" class="active" data-label="❌ 問題：同一段影片裡月曆樣式已經不統一——有掛牆大月曆也有桌上型，跨片段更嚴重">
+            <img src="hanoi-guide-assets/case10-prop-consistent.png" class="active" data-label="❌ 問題：每次重新生成，角色手裡的月曆樣式都不同（大小、顏色、格式全變）">
             <img src="hanoi-guide-assets/case10-prop-inconsistent.png" data-label="✅ 修正後：月曆統一為羊毛氈桌曆風格，各片段視覺一致">
             <img src="hanoi-guide-assets/case10-prop-reference.png" data-label="道具設定圖範例：羊毛氈翻頁桌曆，多角度展示——正面、側面、近景細節">
-            <div class="img-label">❌ 問題：同一段影片裡月曆樣式已經不統一——有掛牆大月曆也有桌上型，跨片段更嚴重</div>
+            <div class="img-label">❌ 問題：每次重新生成，角色手裡的月曆樣式都不同（大小、顏色、格式全變）</div>
           </div>
           <div class="gallery-thumbs">
             <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/case10-prop-consistent.png"></div>
@@ -1631,7 +1631,7 @@ and felt texture from the reference."</span></div>
           <tr><td>台詞被分配給錯誤角色</td><td>Prompt 沒明確指定每句話是誰說的</td><td>用 <code>SPEAKING TURN 1 — OLIVER ONLY</code> 結構；明確寫「另一人 mouth closed, remains silent」</td></tr>
           <tr><td>越南地名發音跑掉</td><td>AI 用英文拼字規則推測越南語發音</td><td>台詞改用語音近似拼法 <code>Baht Chahng</code>（畫面文字仍用正式拼法 Bat Trang）</td></tr>
           <tr><td>生成請求被擋下「似乎違反相關條款」</td><td>Prompt 裡多個涉及未成年外貌/年齡/身體描述的組合觸發自動審查</td><td>大幅精簡 Prompt；拿掉年齡數字、生理特徵清單、聲音特徵列表；改說「用參考圖的角色風格」</td></tr>
-          <tr><td>關鍵道具每段長得不一樣</td><td>AI 每次從頭推斷道具外觀，Prompt 文字描述不足以鎖定樣式</td><td>先用 ChatGPT / Midjourney 生成多角度道具設定圖，確認後加入每段的參考圖組；Prompt 改成「如 @Image3 所示的道具」</td></tr>
+          <tr><td>角色手持的關鍵道具，每次重新生成樣式都不同</td><td>AI 每次從頭推斷道具外觀，Prompt 文字描述不足以鎖定樣式</td><td>先用 ChatGPT / Midjourney 生成多角度道具設定圖，確認後加入每段的參考圖組；Prompt 改成「如 @Image3 所示的道具」</td></tr>
           <tr><td>帳號配額用完，無法繼續生成</td><td>每個 Google 帳號約 50 個片段 / 月的上限</td><td>換其他 Google 帳號繼續；盡量減少不必要的重新生成次數來節省配額</td></tr>
           <tr><td>畫作、建築、服裝上出現 AI 自動生成的文字標籤</td><td>AI 預設會在場景物件上加標籤</td><td>加入 <code>NO VISIBLE TEXT — STRICT RULE</code> 區塊，逐條列出禁止的文字類型（見 Prompt 範本頁）</td></tr>
         </table>
