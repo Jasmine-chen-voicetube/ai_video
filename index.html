@@ -286,6 +286,7 @@
     <div class="nav-item" data-page="case7">🌏 案例 7：地名發音跑掉</div>
     <div class="nav-item" data-page="case8">🎥 案例 8：片段間場景不連貫</div>
     <div class="nav-item" data-page="case9">🚫 案例 9：Prompt 觸發內容審查</div>
+    <div class="nav-item" data-page="case10">🪆 案例 10：關鍵道具樣式不一致</div>
   </div>
   <div class="nav-divider"></div>
   <div class="nav-group">
@@ -1516,6 +1517,98 @@ End immediately after the final spoken word.</span></div>
     </div>
   </div>
 
+  <!-- ── 案例 10 ── -->
+  <div class="page" id="page-case10">
+    <div class="page-split">
+      <div class="split-left">
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="c10-desc">描述</div>
+          <div class="tab-btn" data-tab="c10-prompt">做法</div>
+        </div>
+        <div class="tab-pane active" id="tab-c10-desc">
+          <h3>關鍵道具每個片段長得不一樣</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：視覺一致性——道具 / 場景物件</p>
+
+          <div class="callout problem">
+            <div class="callout-icon">❌</div>
+            <div><b>結果：同一個道具，每段影片的樣式差很多</b><p>例如：第一段的月曆是掛在牆上的大月曆（有文字、精細格子），第二段卻變成桌上小月曆、第三段又是另一個風格——觀眾看起來像是不同道具。</p></div>
+          </div>
+
+          <div class="callout tip">
+            <div class="callout-icon">🔍</div>
+            <div><b>根本原因</b><p>AI 每次生成都從頭推斷道具的外觀。Prompt 裡描述道具（如「一本月曆」）只是文字指向，沒有圖片參考，AI 會自由發揮造型、顏色、大小。</p></div>
+          </div>
+
+          <div class="callout lesson" style="margin-top:14px;">
+            <div class="callout-icon">✅</div>
+            <div><b>解法：為關鍵道具製作專屬設定圖，加進參考圖</b>
+            <p>就像角色設定圖一樣——先用 AI 圖像工具（ChatGPT、Midjourney）生成一張多角度、高解析度的道具圖，確認樣式後，每次生成影片都把這張圖當作參考圖之一上傳。</p>
+            <p style="margin-top:6px;">這次的做法：生成一張「羊毛氈手作翻頁桌曆」的多角度設定圖，包含正面、側面、近景細節，確認材質、顏色（淺藍底奶白頁面、金色圓環、黃色星星裝飾）後，每段影片都帶上這張參考圖。</p></div>
+          </div>
+
+          <div class="principle green" style="margin-top:14px;">
+            <b>學到的原則</b>
+            <p>關鍵道具（反覆出現、教學核心物件）要有自己的設定圖。道具設定圖和角色設定圖的功能一樣——鎖定外觀，讓 AI 有圖可循而不是自由發揮。</p>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab-c10-prompt">
+          <h3>道具設定圖的製作方式</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">用 ChatGPT 或 Midjourney 先產出道具設定圖，確認後才開始生成影片。</p>
+
+          <div class="prompt-label bad">不夠——只在 Prompt 裡描述道具</div>
+          <div class="prompt-code">Long holds a small calendar.
+The calendar has numbers 1–31.
+<span class="dim">// ↑ 沒有圖片參考，AI 每段自由發揮：掛牆式、桌上型、大、小、有無文字都不固定</span></div>
+
+          <div class="prompt-label good">正確做法——先產道具設定圖，加入參考圖</div>
+          <div class="prompt-code"><span class="add">Step 1｜用 ChatGPT 生成道具設定圖：
+"Generate a product-style reference sheet of a miniature
+needle-felt wool desk calendar. Show it from:
+- Front view (full face, showing the number grid)
+- Side view (showing the spine and ring binding)
+- Close-up detail (texture, star decoration, ring detail)
+Colours: soft blue cover, cream white pages,
+gold metal rings, yellow felt star.
+Style: handcrafted miniature, soft wool texture,
+warm studio lighting, white background."
+
+Step 2｜確認設定圖樣式符合影片風格後，
+將這張設定圖加進每次生成的參考圖組（@Image3 位置）
+
+Step 3｜Prompt 裡改成指向設定圖：
+"Long holds the felt calendar exactly as shown in @Image3.
+Preserve the exact same calendar design, colours,
+and felt texture from the reference."</span></div>
+
+          <div class="callout info" style="margin-top:12px;">
+            <div class="callout-icon">💡</div>
+            <div><b>哪些道具需要設定圖？</b><ul class="list" style="margin-top:6px;">
+              <li>在多個片段反覆出現的物件</li>
+              <li>有教學意義、觀眾需要記住外觀的道具</li>
+              <li>造型複雜、AI 容易自由發揮的物件</li>
+              <li>背景中佔畫面大比例的主要元素</li>
+            </ul></div>
+          </div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="gallery" data-gallery="c10">
+          <div class="gallery-main">
+            <img src="hanoi-guide-assets/case10-prop-inconsistent.png" class="active" data-label="❌ 問題：同一段影片裡月曆樣式已經不統一——有掛牆大月曆也有桌上型，跨片段更嚴重">
+            <img src="hanoi-guide-assets/case10-prop-consistent.png" data-label="✅ 修正後：月曆統一為羊毛氈桌曆風格，各片段視覺一致">
+            <img src="hanoi-guide-assets/case10-prop-reference.png" data-label="道具設定圖範例：羊毛氈翻頁桌曆，多角度展示——正面、側面、近景細節">
+            <div class="img-label">❌ 問題：同一段影片裡月曆樣式已經不統一——有掛牆大月曆也有桌上型，跨片段更嚴重</div>
+          </div>
+          <div class="gallery-thumbs">
+            <div class="gallery-thumb active" data-idx="0"><img src="hanoi-guide-assets/case10-prop-inconsistent.png"></div>
+            <div class="gallery-thumb" data-idx="1"><img src="hanoi-guide-assets/case10-prop-consistent.png"></div>
+            <div class="gallery-thumb" data-idx="2"><img src="hanoi-guide-assets/case10-prop-reference.png"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── 速查原則 ── -->
   <div class="page" id="page-cheatsheet">
     <div class="page-full">
@@ -1538,6 +1631,7 @@ End immediately after the final spoken word.</span></div>
           <tr><td>台詞被分配給錯誤角色</td><td>Prompt 沒明確指定每句話是誰說的</td><td>用 <code>SPEAKING TURN 1 — OLIVER ONLY</code> 結構；明確寫「另一人 mouth closed, remains silent」</td></tr>
           <tr><td>越南地名發音跑掉</td><td>AI 用英文拼字規則推測越南語發音</td><td>台詞改用語音近似拼法 <code>Baht Chahng</code>（畫面文字仍用正式拼法 Bat Trang）</td></tr>
           <tr><td>生成請求被擋下「似乎違反相關條款」</td><td>Prompt 裡多個涉及未成年外貌/年齡/身體描述的組合觸發自動審查</td><td>大幅精簡 Prompt；拿掉年齡數字、生理特徵清單、聲音特徵列表；改說「用參考圖的角色風格」</td></tr>
+          <tr><td>關鍵道具每段長得不一樣</td><td>AI 每次從頭推斷道具外觀，Prompt 文字描述不足以鎖定樣式</td><td>先用 ChatGPT / Midjourney 生成多角度道具設定圖，確認後加入每段的參考圖組；Prompt 改成「如 @Image3 所示的道具」</td></tr>
           <tr><td>帳號配額用完，無法繼續生成</td><td>每個 Google 帳號約 50 個片段 / 月的上限</td><td>換其他 Google 帳號繼續；盡量減少不必要的重新生成次數來節省配額</td></tr>
           <tr><td>畫作、建築、服裝上出現 AI 自動生成的文字標籤</td><td>AI 預設會在場景物件上加標籤</td><td>加入 <code>NO VISIBLE TEXT — STRICT RULE</code> 區塊，逐條列出禁止的文字類型（見 Prompt 範本頁）</td></tr>
         </table>
