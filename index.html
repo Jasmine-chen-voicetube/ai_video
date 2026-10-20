@@ -454,6 +454,7 @@ same <span class="hi">[列出要固定的元素]</span>,
           <div class="tab-btn active" data-tab="tips-blank" data-gallery-start="0">空白場景佔位</div>
           <div class="tab-btn" data-tab="tips-replace" data-gallery-start="1">影片替換</div>
           <div class="tab-btn" data-tab="tips-omni" data-gallery-start="3">移除文字</div>
+          <div class="tab-btn" data-tab="tips-text" data-gallery-start="6">文字疊加</div>
         </div>
 
         <div class="tab-pane active" id="tab-tips-blank">
@@ -513,6 +514,26 @@ same <span class="hi">[列出要固定的元素]</span>,
             <div class="callout-icon">ℹ️</div>
             <div><b>重新生成可能需要嘗試多次</b><p>失敗不代表指令有問題，直接重試即可。成功後用「在目前場景中插入」替換舊版本。</p></div>
           </div>
+        <div class="tab-pane" id="tab-tips-text">
+          <h3>AI 只產空白模板，文字用 Vids 文字工具補上</h3>
+          <div class="callout problem">
+            <div class="callout-icon">❌</div>
+            <div><b>問題</b><p>用 Prompt 指定文字（如數字、單字）時，AI 生成的字型、大小、位置每次都不同，跨片段更難統一。</p></div>
+          </div>
+          <div class="callout lesson">
+            <div class="callout-icon">✅</div>
+            <div><b>解法</b>
+            <ol style="margin-top:6px;padding-left:16px;font-size:13px;line-height:1.9;">
+              <li>Prompt 中不要指定文字內容，改成描述<b>「空白的____」</b>（如「a calendar with a blank date area」）</li>
+              <li>AI 生成乾淨的空白模板</li>
+              <li>插入時間軸後，用右側工具列 <b>Text</b> 功能手動加上文字</li>
+              <li>每個片段各自加文字，字型與樣式可以完全統一控制</li>
+            </ol></div>
+          </div>
+          <div class="callout info">
+            <div class="callout-icon">ℹ️</div>
+            <div><b>文字時間軸</b><p>加上的文字會在時間軸出現獨立的 Aa 軌道，可以精確調整每個字的出現時間與持續長度。</p></div>
+          </div>
         </div>
       </div>
 
@@ -525,6 +546,7 @@ same <span class="hi">[列出要固定的元素]</span>,
             <img src="hanoi-guide-assets/tip-omni-edit-select.png" data-label="移除文字 Step 1：選中片段，點「用 Omni 編輯」">
             <img src="hanoi-guide-assets/tip-omni-edit-prompt.png" data-label="移除文字 Step 2：輸入修改指令，例如「畫下方的英文字都拿掉」">
             <img src="hanoi-guide-assets/tip-omni-edit-result.png" data-label="移除文字 Step 3：生成失敗就再點「重新生成」">
+            <img src="hanoi-guide-assets/tip-text-overlay.png" data-label="文字疊加：AI 生成空白模板，再用 Vids Text 工具手動加入數字或單字，時間軸出現獨立 Aa 軌道">
             <div class="img-label">空白佔位：時間軸最後塞一個空白場景，拖入 AI 片段後刪掉空白場景</div>
           </div>
           <div class="gallery-thumbs">
@@ -534,6 +556,7 @@ same <span class="hi">[列出要固定的元素]</span>,
             <div class="gallery-thumb" data-idx="3"><img src="hanoi-guide-assets/tip-omni-edit-select.png"></div>
             <div class="gallery-thumb" data-idx="4"><img src="hanoi-guide-assets/tip-omni-edit-prompt.png"></div>
             <div class="gallery-thumb" data-idx="5"><img src="hanoi-guide-assets/tip-omni-edit-result.png"></div>
+            <div class="gallery-thumb" data-idx="6"><img src="hanoi-guide-assets/tip-text-overlay.png"></div>
           </div>
         </div>
       </div>
