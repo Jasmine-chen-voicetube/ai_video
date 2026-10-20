@@ -283,7 +283,7 @@
     <div class="nav-item" data-page="case4">🔊 案例 4：聲音變成熟</div>
     <div class="nav-item" data-page="case5">🎵 案例 5：台詞後加音樂</div>
     <div class="nav-item" data-page="case6">🗣️ 案例 6：說話者錯誤</div>
-    <div class="nav-item" data-page="case7">🌏 案例 7：地名發音跑掉</div>
+    <div class="nav-item" data-page="case7">🌏 案例 7：地名 & 人名發音跑掉</div>
     <div class="nav-item" data-page="case8">🎥 案例 8：片段間場景不連貫</div>
     <div class="nav-item" data-page="case9">🚫 案例 9：Prompt 觸發內容審查</div>
     <div class="nav-item" data-page="case10">🪆 案例 10：關鍵道具樣式不一致</div>
@@ -1170,8 +1170,8 @@ While Linh speaks, Oliver listens silently with his mouth CLOSED.</span></div>
           <div class="tab-btn" data-tab="c7-prompt">Prompt</div>
         </div>
         <div class="tab-pane active" id="tab-c7-desc">
-          <h3>越南地名 Bat Trang 發音跑掉</h3>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：音訊——地名發音不一致</p>
+          <h3>越南地名 / 人名發音跑掉</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">問題分類：音訊——越南語地名 & 人名發音不準確</p>
 
           <div class="callout problem">
             <div class="callout-icon">❌</div>
@@ -1192,6 +1192,12 @@ While Linh speaks, Oliver listens silently with his mouth CLOSED.</span></div>
             <div class="callout-icon">✅</div>
             <div><b>修正後</b><p>在台詞裡把 <code>Bat Trang</code> 改成語音近似拼法 <code>Baht Chahng</code>，讓 AI TTS 念得接近越南語。畫面文字仍維持正式拼法 <code>Bat Trang</code>。</p></div>
           </div>
+
+          <div class="callout info" style="margin-top:10px;">
+            <div class="callout-icon">🔤</div>
+            <div><b>同樣的問題也發生在人名</b><p>越南人名（如 Hoa、Linh、Lan）對 AI TTS 同樣陌生。除了語音拼法，也可以提供更詳細的 IPA 發音說明和念法步驟來引導 AI。</p>
+            <p style="margin-top:6px;">例如人名 <b>Hoa</b>（/hwaː/，平調）：提示 AI「Begin with a soft 'h,' glide briefly through 'w,' and open into 'ah.' Do not split it into 'Ho-ah' or pronounce it as 'Hoe.'」</p></div>
+          </div>
         </div>
         <div class="tab-pane" id="tab-c7-prompt">
           <div class="prompt-label bad">原始寫法（容易念歪）</div>
@@ -1200,7 +1206,9 @@ While Linh speaks, Oliver listens silently with his mouth CLOSED.</span></div>
 than the railway station!"
 <span class="dim">// ↑ AI 把 "Trang" 念成英文字，接近 "train"</span></div>
 
-          <div class="prompt-label good">修正版（語音拼法 + 說明）</div>
+          <div class="prompt-label good">方法 A：語音近似拼法（地名常用）</div>
+
+          <div class="prompt-label good">方法 A 完整範例（地名 Bat Trang）</div>
           <div class="prompt-code"><span class="add">PLACE NAME PRONUNCIATION — CRITICAL
 
 Use the spoken pronunciation "Baht Chahng" for Bat Trang.
@@ -1218,6 +1226,26 @@ Linh says:
 than the cathedral."
 
 <span class="dim">// 畫面標籤、字幕仍用正式拼法 Bat Trang / Bát Tràng</span></div>
+
+          <div class="prompt-label good">方法 B：IPA + 步驟說明（人名適用）</div>
+          <div class="prompt-code"><span class="add">NAME PRONUNCIATION
+
+"Hoa" is a Vietnamese personal name.
+Pronounce it as a single smooth Vietnamese syllable, /hwaː/,
+with a level tone.
+Begin with a soft "h," glide briefly through "w,"
+and open into "ah."
+Do not split it into "Ho-ah" or pronounce it as "Hoe."
+Preserve this pronunciation within Andy's English sentence.</span></div>
+
+          <div class="callout info" style="margin-top:10px;">
+            <div class="callout-icon">💡</div>
+            <div><b>兩種方法各有適用場合</b>
+            <ul class="list" style="margin-top:6px;">
+              <li><b>方法 A（語音拼法）</b>：地名、詞彙——直接在台詞裡替換，操作最簡單</li>
+              <li><b>方法 B（IPA + 步驟說明）</b>：人名、單音節名字——發音細節較多時用；描述「怎麼念」比替換拼法更準確</li>
+            </ul></div>
+          </div>
         </div>
       </div>
       <div class="split-right">
@@ -1629,7 +1657,7 @@ and felt texture from the reference."</span></div>
           <tr><td>人物聲音突然變成熟</td><td>平台根本限制：Google Vids 語音庫全為成人聲線，沒有兒童聲；加上只寫年齡 AI 不會理解為聲線要求</td><td>接受平台限制；改用特徵描述縮小段落落差：<code>pre-pubescent, before voice has deepened</code>；排除 <code>deep, resonant, adult</code>。若聲音一致性優先，考慮後製統一配音</td></tr>
           <tr><td>台詞後自動加背景音樂</td><td>台詞結束後有空白，AI 用音樂填補</td><td>讓最後一個字靠近影片結尾；不安排「說完話後等待」的畫面；禁止寫明「Do not fill silent moments with music」</td></tr>
           <tr><td>台詞被分配給錯誤角色</td><td>Prompt 沒明確指定每句話是誰說的</td><td>用 <code>SPEAKING TURN 1 — OLIVER ONLY</code> 結構；明確寫「另一人 mouth closed, remains silent」</td></tr>
-          <tr><td>越南地名發音跑掉</td><td>AI 用英文拼字規則推測越南語發音</td><td>台詞改用語音近似拼法 <code>Baht Chahng</code>（畫面文字仍用正式拼法 Bat Trang）</td></tr>
+          <tr><td>越南地名 / 人名發音跑掉</td><td>AI 用英文拼字規則推測越南語發音</td><td>地名：台詞改語音近似拼法（如 <code>Baht Chahng</code>）；人名：加 IPA + 念法步驟說明（如 "Hoa" → /hwaː/，Begin with 'h,' glide through 'w,' open into 'ah'）</td></tr>
           <tr><td>生成請求被擋下「似乎違反相關條款」</td><td>Prompt 裡多個涉及未成年外貌/年齡/身體描述的組合觸發自動審查</td><td>大幅精簡 Prompt；拿掉年齡數字、生理特徵清單、聲音特徵列表；改說「用參考圖的角色風格」</td></tr>
           <tr><td>角色手持的關鍵道具，每次重新生成樣式都不同</td><td>AI 每次從頭推斷道具外觀，Prompt 文字描述不足以鎖定樣式</td><td>先用 ChatGPT / Midjourney 生成多角度道具設定圖，確認後加入每段的參考圖組；Prompt 改成「如 @Image3 所示的道具」</td></tr>
           <tr><td>帳號配額用完，無法繼續生成</td><td>每個 Google 帳號約 50 個片段 / 月的上限</td><td>換其他 Google 帳號繼續；盡量減少不必要的重新生成次數來節省配額</td></tr>
