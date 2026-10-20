@@ -381,7 +381,12 @@
             <tr><td style="color:var(--muted)">解析度</td><td>720p</td></tr>
             <tr><td style="color:var(--muted)">顯示比例</td><td>橫式 16:9</td></tr>
           </table>
-          <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px;">同一支影片的所有片段都用同一組設定，不要每段改模型。</p>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;">同一支影片的所有片段都用同一組設定，不要每段改模型。</p>
+
+          <div class="callout problem" style="margin-bottom:16px;">
+            <div class="callout-icon">⚠️</div>
+            <div><b>平台限制：每個帳號約 50 個片段 / 月</b><p>製作一支完整教育影片幾乎會把整個月的配額用完。重新生成次數越多，配額消耗越快。</p><p style="margin-top:6px;"><b>目前解法：</b>公司有多個 Google 帳號可輪流使用，額度用完了換下一個帳號繼續生成。</p></div>
+          </div>
 
           <h3>腳本拆片段原則</h3>
           <ul class="list">
@@ -1533,6 +1538,7 @@ End immediately after the final spoken word.</span></div>
           <tr><td>台詞被分配給錯誤角色</td><td>Prompt 沒明確指定每句話是誰說的</td><td>用 <code>SPEAKING TURN 1 — OLIVER ONLY</code> 結構；明確寫「另一人 mouth closed, remains silent」</td></tr>
           <tr><td>越南地名發音跑掉</td><td>AI 用英文拼字規則推測越南語發音</td><td>台詞改用語音近似拼法 <code>Baht Chahng</code>（畫面文字仍用正式拼法 Bat Trang）</td></tr>
           <tr><td>生成請求被擋下「似乎違反相關條款」</td><td>Prompt 裡多個涉及未成年外貌/年齡/身體描述的組合觸發自動審查</td><td>大幅精簡 Prompt；拿掉年齡數字、生理特徵清單、聲音特徵列表；改說「用參考圖的角色風格」</td></tr>
+          <tr><td>帳號配額用完，無法繼續生成</td><td>每個 Google 帳號約 50 個片段 / 月的上限</td><td>換其他 Google 帳號繼續；盡量減少不必要的重新生成次數來節省配額</td></tr>
           <tr><td>畫作、建築、服裝上出現 AI 自動生成的文字標籤</td><td>AI 預設會在場景物件上加標籤</td><td>加入 <code>NO VISIBLE TEXT — STRICT RULE</code> 區塊，逐條列出禁止的文字類型（見 Prompt 範本頁）</td></tr>
         </table>
       </div>
