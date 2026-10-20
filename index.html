@@ -573,7 +573,7 @@ same <span class="hi">[列出要固定的元素]</span>,
         <h3>聲音一致性</h3>
         <div class="callout info" style="margin-bottom:0;">
           <div class="callout-icon">ℹ️</div>
-          <div><b>目前限制：Google Vids 的聲音每段是重新生成的</b><p>在 Prompt 裡描述角色聲音特徵可以降低差距，但無法完全鎖定。文字寫「與前面相同」沒有效果——AI 沒有存取上一段音訊。如需高度一致的聲音，考慮後製統一配音。</p></div>
+          <div><b>平台根本限制：Google Vids 沒有兒童聲線</b><p>Google Vids 的語音庫針對企業培訓與商務簡報設計，<b>所有聲音皆為成年人聲線，沒有任何兒童或學生聲音</b>。無論 Prompt 怎麼寫，都無法讓聲音真正像小學生——這是平台限制，不是 Prompt 的問題。</p><p style="margin-top:6px;">Prompt 中的聲線描述只能在成年人聲線的範圍內縮小段落間的落差，讓各段聽起來較一致。若聲音一致性是優先需求，考慮後製統一配音。</p></div>
         </div>
       </div>
     </div>
@@ -948,14 +948,19 @@ of Oliver from the existing master scene.</span></div>
             <div><b>根本原因</b><p>Prompt 只寫「12-year-old voice」，AI 把這解讀為角色年齡標籤，不是聲線特徵描述。每段影片是獨立生成的，AI 不會自動沿用前面片段的聲線設定。</p></div>
           </div>
 
-          <div class="callout lesson" style="margin-top:14px;">
+          <div class="callout info" style="margin-top:10px;">
+            <div class="callout-icon">ℹ️</div>
+            <div><b>平台層級的根本限制（無法靠 Prompt 解決）</b><p>Google Vids 的內建語音庫是針對<b>企業培訓與商務簡報</b>設計的，目前<b>完全沒有提供兒童或學生聲線</b>。所有可用聲音皆為成年人聲線。</p><p style="margin-top:6px;">這意味著：無論 Prompt 怎麼寫，都無法讓聲音真正像小學生。Prompt 只能在「成年人聲線」的範圍內，盡量讓各段聽起來較一致、語氣較輕快，並降低段落間的落差感。</p></div>
+          </div>
+
+          <div class="callout lesson" style="margin-top:10px;">
             <div class="callout-icon">✅</div>
-            <div><b>修正後</b><p>改成描述聲線特徵而不是年齡數字。明確排除：deep voice、mature resonance、voice cracking、adult narrator。</p></div>
+            <div><b>實際能做到的事</b><p>用聲線特徵描述（而非年齡數字）來縮小段落間的聲音落差。目標是讓各段聽起來像「同一個聲音」，而不是讓聲音變成兒童聲。</p></div>
           </div>
 
           <div class="principle red" style="margin-top:14px;">
             <b>學到的原則</b>
-            <p>聲線不用年齡描述，用特徵描述。「尚未變聲的男生聲線」比「12歲男生」更準確。</p>
+            <p>聲線落差是 Google Vids 的平台限制，不是 Prompt 寫法的問題。目前只能靠特徵描述降低段落間的差距，無法根本解決。若聲音一致性是優先需求，考慮後製統一配音。</p>
           </div>
         </div>
         <div class="tab-pane" id="tab-c4-prompt">
@@ -1523,7 +1528,7 @@ End immediately after the final spoken word.</span></div>
           <tr><td>色調變白 / 偏冷</td><td>AI 自動校正成標準日光</td><td>指定 warm golden + 禁止 <code>pale / grey / cool / white</code></td></tr>
           <tr><td>角色站位左右跑掉</td><td>AI 把近景當新構圖</td><td>指定「Linh 在左，Oliver 在右」；說明這是從主視覺裁切的近景</td></tr>
           <tr><td>文字 / 地名出現錯誤</td><td>AI 處理長文字不穩定</td><td>後製用文字圖層加入，不交給 AI 生成</td></tr>
-          <tr><td>人物聲音突然變成熟</td><td>只寫年齡，不夠描述聲線特徵</td><td>改用特徵描述：<code>pre-pubescent, before voice has deepened</code>；明確排除 <code>deep, resonant, adult</code></td></tr>
+          <tr><td>人物聲音突然變成熟</td><td>平台根本限制：Google Vids 語音庫全為成人聲線，沒有兒童聲；加上只寫年齡 AI 不會理解為聲線要求</td><td>接受平台限制；改用特徵描述縮小段落落差：<code>pre-pubescent, before voice has deepened</code>；排除 <code>deep, resonant, adult</code>。若聲音一致性優先，考慮後製統一配音</td></tr>
           <tr><td>台詞後自動加背景音樂</td><td>台詞結束後有空白，AI 用音樂填補</td><td>讓最後一個字靠近影片結尾；不安排「說完話後等待」的畫面；禁止寫明「Do not fill silent moments with music」</td></tr>
           <tr><td>台詞被分配給錯誤角色</td><td>Prompt 沒明確指定每句話是誰說的</td><td>用 <code>SPEAKING TURN 1 — OLIVER ONLY</code> 結構；明確寫「另一人 mouth closed, remains silent」</td></tr>
           <tr><td>越南地名發音跑掉</td><td>AI 用英文拼字規則推測越南語發音</td><td>台詞改用語音近似拼法 <code>Baht Chahng</code>（畫面文字仍用正式拼法 Bat Trang）</td></tr>
